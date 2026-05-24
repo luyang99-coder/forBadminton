@@ -1,5 +1,12 @@
+/**
+ * 羽毛球轮转排阵算法
+ * 基于贪心搜索 + 多轮随机扰动取全局最优
+ */
 const { nowId } = require('./config')
 const { normalizeLevel, levelLabel, genderText, teamLevel, teamNames } = require('./player')
+
+/** 候选缓存：避免重复计算相同球员集合的候选 */
+const candidateCache = new Map()
 
 function pairKey(a, b) {
   return [a, b].sort().join('|')
@@ -150,6 +157,13 @@ function constraintPenalty(teamAIds, teamBIds, options) {
 }
 
 function buildCandidates(players, options) {
+  // 缓存：相同球员集合+约束 → 复用结果
+  const cacheKey = players.map(function(p) { return p.id }).sort().join(',') +
+    '|' + (options.avoidWomenDoubles ? 'a' : '') +
+    '|' + (options.preferMixed ? 'm' : '')
+  var cached = candidateCache.get(cacheKey)
+  if (cached) return cached
+
   const groups = combinations(players, 4)
   const candidates = []
 
@@ -191,6 +205,12 @@ function buildCandidates(players, options) {
       })
     })
   })
+
+  candidateCache.set(cacheKey, candidates)
+  if (candidateCache.size > 32) {
+    var firstKey = candidateCache.keys().next().value
+    candidateCache.delete(firstKey)
+  }
   return candidates
 }
 
@@ -381,9 +401,15 @@ function buildScheduleQuality(games, players, repeatedPartners) {
     avgSkillGap
   }
 }
+/** 清除排阵缓存（球员/约束变更时调用） */
+function clearCandidateCache() {
+  candidateCache.clear()
+}
+
 module.exports = {
   pairKey,
   generateSchedule,
   buildStateFromGames,
-  buildScheduleQuality
+  buildScheduleQuality,
+  clearCandidateCache
 }

@@ -57,7 +57,7 @@ function uniqueNames(text) {
   const seen = {}
   const names = []
   String(text || '')
-    .split(/[\n,??\s]+/)
+    .split(/[\n,、\s]+/)
     .map((name) => name.trim())
     .filter(Boolean)
     .forEach((name) => {
