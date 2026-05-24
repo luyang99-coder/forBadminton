@@ -1,0 +1,462 @@
+/* Final signup drawer layout */
+.player-list {
+  background: #fff;
+  border: 1rpx solid #edf0f2;
+  border-radius: 8rpx;
+  display: block;
+  margin-top: 14rpx;
+  overflow: hidden;
+}
+
+.drawer-row,
+.drawer-row.open-slot,
+.drawer-row.status-bench,
+.drawer-row.status-absent {
+  background: #fff;
+  border: 0;
+  border-bottom: 1rpx solid #edf0f2;
+  border-radius: 0;
+  display: block;
+  padding: 0;
+}
+
+.drawer-row:last-child {
+  border-bottom: 0;
+}
+
+.drawer-row.expanded {
+  background: #fbfcfd;
+}
+
+.drawer-summary {
+  align-items: center;
+  box-sizing: border-box;
+  display: grid;
+  gap: 18rpx;
+  grid-template-columns: minmax(0, 1fr) 108rpx;
+  min-height: 108rpx;
+  padding: 18rpx;
+}
+
+.drawer-main {
+  min-width: 0;
+}
+
+.drawer-title-line {
+  align-items: center;
+  display: flex;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.drawer-title-line .roster-slot {
+  color: #1f2937;
+  flex: 0 0 auto;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.drawer-title-line .player-name {
+  color: #1f2937;
+  flex: 0 1 auto;
+  font-size: 30rpx;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.drawer-title-line .player-name.placeholder {
+  color: #d97706;
+}
+
+.drawer-row .roster-gender-symbol {
+  flex: 0 0 auto;
+  font-size: 24rpx;
+}
+
+.drawer-row .player-row-meta {
+  color: #8a94a3;
+  display: flex;
+  flex-wrap: nowrap;
+  font-size: 22rpx;
+  gap: 8rpx;
+  line-height: 1.4;
+  margin-top: 6rpx;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.drawer-row .player-row-meta {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.drawer-row .source-pill {
+  background: transparent;
+  color: #8a94a3;
+  min-width: 0;
+  overflow: visible;
+  padding: 0;
+  white-space: normal;
+}
+
+.drawer-row .source-pill.mine-source {
+  color: #16744f;
+  font-weight: 800;
+}
+
+.drawer-side {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  justify-content: center;
+  min-width: 0;
+}
+
+.drawer-row .player-level-pill {
+  background: #f1f5f9;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 999rpx;
+  box-sizing: border-box;
+  color: #475569;
+  font-size: 21rpx;
+  height: 38rpx;
+  line-height: 36rpx;
+  max-width: 104rpx;
+  overflow: hidden;
+  padding: 0 12rpx;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-row .player-level-pill.bound {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #0f766e;
+}
+
+.drawer-arrow {
+  color: #d97706;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.drawer-panel {
+  background: #f8fafc;
+  border-top: 1rpx solid #edf0f2;
+  display: grid;
+  gap: 14rpx;
+  padding: 16rpx 18rpx 18rpx;
+}
+
+.drawer-field {
+  align-items: center;
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: 70rpx minmax(0, 1fr);
+}
+
+.drawer-field > text {
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.drawer-input-row {
+  display: grid;
+  gap: 10rpx;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.drawer-input-row input,
+.drawer-row .roster-level-box {
+  background: #fff;
+  border: 1rpx solid #dbe3ea;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  height: 58rpx;
+}
+
+.drawer-input-row input {
+  color: #111827;
+  font-size: 26rpx;
+  padding: 0 16rpx;
+}
+
+.drawer-row .slot-save {
+  background: #16744f;
+  border-radius: 8rpx;
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 800;
+  height: 58rpx;
+  line-height: 56rpx;
+  margin: 0;
+  padding: 0 18rpx;
+  width: 100%;
+}
+
+.drawer-row .roster-gender {
+  display: grid;
+  gap: 10rpx;
+  grid-template-columns: repeat(2, 104rpx);
+  margin: 0;
+}
+
+.drawer-row .roster-gender .gender-choice {
+  border-radius: 8rpx;
+  height: 58rpx;
+  line-height: 56rpx;
+  margin: 0;
+}
+
+.drawer-row .roster-level-box {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 52rpx minmax(0, 1fr);
+  padding: 0 10rpx;
+}
+
+.drawer-row .roster-level-box text {
+  color: #94a3b8;
+  font-size: 22rpx;
+  text-align: center;
+}
+
+.drawer-row .roster-level {
+  background: transparent;
+  border: 0;
+  color: #111827;
+  font-size: 26rpx;
+  height: 54rpx;
+  line-height: 54rpx;
+  padding: 0;
+}
+
+.drawer-info {
+  color: #94a3b8;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 22rpx;
+  gap: 12rpx;
+  line-height: 1.4;
+}
+
+.drawer-row .player-row-actions,
+.drawer-row .player-row-actions.single {
+  display: grid;
+  gap: 10rpx;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 2rpx 0 0;
+}
+
+.drawer-row .player-row-actions.single {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.drawer-row .player-row-actions button {
+  border-radius: 8rpx;
+  font-size: 23rpx;
+  font-weight: 700;
+  height: 56rpx;
+  line-height: 54rpx;
+  margin: 0;
+  padding: 0 10rpx;
+}
+
+@media (max-width: 360px) {
+  .drawer-summary {
+    gap: 14rpx;
+    grid-template-columns: minmax(0, 1fr) 92rpx;
+    padding: 16rpx 14rpx;
+  }
+
+  .drawer-panel {
+    padding-left: 14rpx;
+  }
+
+  .drawer-field {
+    grid-template-columns: 1fr;
+  }
+
+  .drawer-row .player-row-actions,
+  .drawer-row .player-row-actions.single {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Last-pass overrides for roster size control and drawer buttons */
+.roster-tools.compact.roster-size-tools {
+  align-items: stretch;
+  background: #f8fafc;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 16rpx 0 12rpx;
+  padding: 12rpx;
+}
+
+.roster-size-field {
+  align-items: center;
+  background: #fff;
+  border: 1rpx solid #dbe3ea;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10rpx;
+  grid-template-columns: 132rpx minmax(0, 1fr);
+  height: 64rpx;
+  padding: 0 14rpx;
+}
+
+.roster-size-field text {
+  color: #475569;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.roster-size-field input {
+  background: transparent;
+  border: 0;
+  color: #111827;
+  font-size: 28rpx;
+  font-weight: 800;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0;
+  text-align: right;
+}
+
+.roster-size-tools .bench-add {
+  background: #eff6ff;
+  border: 1rpx solid #bfdbfe;
+  border-radius: 8rpx;
+  color: #2563eb;
+  font-size: 24rpx;
+  font-weight: 800;
+  height: 64rpx;
+  line-height: 62rpx;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.drawer-input-row.readonly {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.drawer-row .player-row-actions,
+.drawer-row .player-row-actions.single {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 4rpx;
+}
+
+.drawer-row .player-row-actions button {
+  box-sizing: border-box;
+  flex: 1 1 180rpx;
+  min-width: 0;
+}
+
+@media (max-width: 360px) {
+  .roster-tools.compact.roster-size-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .roster-size-field {
+    grid-template-columns: 124rpx minmax(0, 1fr);
+  }
+}
+
+/* Drawer buttons must not inherit old roster grids */
+.drawer-row .drawer-panel {
+  padding-left: 18rpx;
+  padding-right: 18rpx;
+}
+
+.drawer-actions {
+  box-sizing: border-box;
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: 1fr;
+  margin-top: 4rpx;
+  width: 100%;
+}
+
+.drawer-actions button,
+.drawer-actions .copy,
+.drawer-actions .roster-link,
+.drawer-actions .roster-remove {
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  display: block;
+  font-size: 24rpx;
+  font-weight: 800;
+  height: 64rpx;
+  line-height: 62rpx;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 16rpx;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.drawer-actions .copy {
+  background: #eef7f1;
+  border: 1rpx solid #cfe7d8;
+  color: #16744f;
+}
+
+.drawer-actions .roster-link {
+  background: #eff6ff;
+  border: 1rpx solid #bfdbfe;
+  color: #2563eb;
+}
+
+.drawer-actions .roster-remove {
+  background: #fff1f2;
+  border: 1rpx solid #fecdd3;
+  color: #be123c;
+}
+
+.drawer-actions button::after {
+  border: 0;
+}
+
+.level-picker,
+.level-picker-box {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.level-picker-box {
+  align-items: center;
+  background: #fff;
+  border: 1rpx solid #dbe3ea;
+  border-radius: 8rpx;
+  color: #111827;
+  display: flex;
+  font-size: 26rpx;
+  font-weight: 800;
+  height: 58rpx;
+  justify-content: space-between;
+  line-height: 58rpx;
+  padding: 0 18rpx;
+}
+
+.level-picker-box::after {
+  color: #94a3b8;
+  content: ">";
+  font-size: 24rpx;
+  transform: rotate(90deg);
+}

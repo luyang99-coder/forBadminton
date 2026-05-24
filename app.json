@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "羽毛球打转",
+    "navigationBarBackgroundColor": "#16744F",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#EEF3EF"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

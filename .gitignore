@@ -1,0 +1,28 @@
+# 依赖
+node_modules/
+cloudfunctions/*/node_modules/
+
+# 构建输出
+miniprogram_npm/
+dist/
+
+# 微信开发者工具配置（本地）
+project.private.config.json
+*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+Thumbs.db
+*.log
+
+# 云开发缓存
+.cloudbase/
+.env
+.env.local
