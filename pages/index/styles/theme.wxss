@@ -40,46 +40,6 @@ page {
   --color-status-bg: rgba(216, 238, 227, 0.84);
 }
 
-/* ---------- 璺熼殢绯荤粺娣辫壊妯″紡 ---------- */
-@media (prefers-color-scheme: dark) {
-  :root,
-  page {
-    --color-bg: #0f0f10;
-    --color-surface: #1a1a1d;
-    --color-surface-2: #222225;
-    --color-surface-3: #2a2a2e;
-    --color-border: #333338;
-    --color-border-light: #2a2a2e;
-    --color-text: #e5e7eb;
-    --color-text-secondary: #9ca3af;
-    --color-text-muted: #6b7280;
-    --color-primary: #2d9f78;
-    --color-primary-dark: #1a8a62;
-    --color-primary-light: #1a2f26;
-    --color-accent: #f5c14d;
-    --color-accent-light: #2a2418;
-    --color-danger: #f87171;
-    --color-danger-light: #2a181a;
-    --color-avatar: #333338;
-    --color-avatar-text: #9ca3af;
-    --color-hero-bg: #1a1a1d;
-    --color-hero-text: #e5e7eb;
-    --bottom-nav-bg: rgba(26, 26, 29, 0.92);
-    --bottom-nav-border: #333338;
-    --color-tab-bg: rgba(42, 42, 46, 0.88);
-    --color-tab-text: #d1d5db;
-    --color-input-bg: rgba(26, 26, 29, 0.9);
-    --color-input-border: rgba(255, 255, 255, 0.12);
-    --color-card-bg-alt: rgba(26, 26, 29, 0.88);
-    --color-warn-bg: rgba(42, 24, 26, 0.92);
-    --color-warn-text: #fca5a5;
-    --color-claim-bg: rgba(26, 47, 38, 0.84);
-    --color-claim-border: rgba(45, 159, 120, 0.32);
-    --color-claim-text: #6ee7b7;
-    --color-status-bg: rgba(26, 47, 38, 0.84);
-  }
-}
-
 /* ---------- 鎵嬪姩鍒囨崲娣辫壊妯″紡 ---------- */
 [data-theme="dark"] {
   --color-bg: #0f0f10;
