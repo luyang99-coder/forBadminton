@@ -435,7 +435,7 @@ Page({
             this.fetchCloudActivities()
           }).catch(() => {
             this.setData({ syncing: false })
-            this.showError('')
+            showError('同步失败，请重试')
           })
           return
         }
@@ -772,7 +772,7 @@ Page({
 
   openSignup() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('报名失败')
       return
     }
     this.setData({
@@ -789,7 +789,7 @@ Page({
 
   lockRoster() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     this.setData({
@@ -806,7 +806,7 @@ Page({
 
   startActivity() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (!this.data.schedule.length) {
@@ -836,11 +836,11 @@ Page({
 
   endActivity() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (!this.data.schedule.length) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     const review = this.buildReview(this.data.schedule, this.data.stats, this.data.repeatedPartners)
@@ -869,7 +869,7 @@ Page({
 
   generateQrCode() {
     if (!this.data.activityId || !this.data.cloudReady) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     this.callCloud('getActivityQr', { activityId: this.data.activityId }).then((res) => {
@@ -1001,7 +1001,7 @@ Page({
   onPlayerNameBlur(event) {
     if (!event || !event.type || event.type !== 'confirm') return
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       this.refreshPlayerOptions()
       return
     }
@@ -1017,7 +1017,7 @@ Page({
     }
     const duplicated = (this.data.participants || []).some((player) => player.id !== id && player.name === name)
     if (duplicated) {
-      this.showError('')
+      showError('加载失败，请重试')
       this.refreshPlayerOptions()
       return
     }
@@ -1039,12 +1039,12 @@ Page({
 
   addSinglePlayer() {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const name = this.data.singleName.trim()
     if (!name) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.role !== 'admin' && this.data.cloudReady) {
@@ -1064,15 +1064,15 @@ Page({
       return
     }
     if (this.data.activityStatus === 'ended') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.participants.length >= MAX_PLAYERS) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.participants.some((player) => player.name === name)) {
-      this.showError('')
+      showError('操作失败')
       this.setData({ singleName: '' })
       return
     }
@@ -1112,12 +1112,12 @@ Page({
 
   signupOpenSlot(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('报名失败')
       return
     }
     if (this.data.role === 'admin') return
     if (!this.data.cloudReady) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1127,7 +1127,7 @@ Page({
     const level = normalizeLevel(this.data.singleLevelDraft || this.data.singleLevel || slot.level)
     const name = String(this.data.singleName || '').trim() || slot.name
     if (isDefaultPlayerName(name)) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     this.signupToCloud(Object.assign({}, slot, {
@@ -1144,12 +1144,12 @@ Page({
 
   addBenchSlot() {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.role !== 'admin') return
     if ((this.data.participants || []).length >= MAX_PLAYERS) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const participants = (this.data.participants || []).concat({
@@ -1182,7 +1182,7 @@ Page({
           return
         }
         this.leaveActivityAfterCancel()
-      }).catch(() => this.showError(''))
+      }).catch(() => this.showError('退出活动失败'))
       return
     }
     if (this.data.role !== 'admin') {
@@ -1228,11 +1228,11 @@ Page({
 
   removePlayer(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('活动操作失败')
       return
     }
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1265,11 +1265,11 @@ Page({
 
   bindPlayerOpenid(event) {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (!this.data.cloudReady) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     const targetId = event.currentTarget.dataset.id
@@ -1286,7 +1286,7 @@ Page({
       }
     })
     if (!candidates.length) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     wx.showActionSheet({
@@ -1327,7 +1327,7 @@ Page({
                 this.refreshCloudActivity(true)
               }).catch(() => {
                 this.setData({ syncing: false })
-                this.showError('')
+                showError('加载失败，请重试')
               })
               return
             }
@@ -1343,7 +1343,7 @@ Page({
 
   setGender(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const gender = event.currentTarget.dataset.gender
@@ -1357,7 +1357,7 @@ Page({
 
   changeLevel(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1371,7 +1371,7 @@ Page({
 
   changePlayerLevel(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1561,7 +1561,7 @@ Page({
           this.showError(`${message} 本地二维码内容为报名路径，可用于开发调试。`, 5000)
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => { wx.hideLoading(); this.showError('') }
+        fail: () => { wx.hideLoading(); this.showError('二维码生成失败') }
       }, this)
     })
   },
@@ -1582,16 +1582,16 @@ Page({
 
   claimMyPlayer() {
     if (!this.data.cloudReady || !this.data.openid) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     if (!this.data.activityId) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     const option = this.data.claimPlayerOptions[this.data.claimPlayerIndex]
     if (!option || !option.id) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     wx.showModal({
@@ -1614,7 +1614,7 @@ Page({
           this.refreshCloudActivity(true)
         }).catch(() => {
           this.setData({ syncing: false })
-          this.showError('')
+          showError('加载失败，请重试')
         })
       }
     })
@@ -1623,7 +1623,7 @@ Page({
   addAdminOpenid() {
     const option = this.data.playerOpenidOptions[this.data.adminPlayerIndex]
     if (!option || !option.openid) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const adminOpenid = option.openid
@@ -1636,7 +1636,7 @@ Page({
         return
       }
       this.setData({ adminOpenids: res.adminOpenids || [], errorText: '' }, () => this.refreshCloudActivity(true))
-    }).catch(() => this.showError(''))
+    }).catch(() => this.showError('加载管理员列表失败'))
   },
 
   removeAdminOpenid(event) {
@@ -1650,7 +1650,7 @@ Page({
         return
       }
       this.setData({ adminOpenids: res.adminOpenids || [], errorText: '' }, () => this.refreshCloudActivity(true))
-    }).catch(() => this.showError(''))
+    }).catch(() => this.showError('加载管理员列表失败'))
   },
 
   onAdminPlayerChange(event) {
@@ -1732,7 +1732,7 @@ Page({
     const a = players[this.data.pairAIndex]
     const b = players[this.data.pairBIndex]
     if (!a || !b || a.id === b.id) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const pairId = pairKey(a.id, b.id)
@@ -1767,11 +1767,11 @@ Page({
 
   generate() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.schedule.some((game) => game.completed)) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     this.ensureRosterCapacity()
@@ -1785,7 +1785,7 @@ Page({
     const round = Number(event.currentTarget.dataset.round)
     const lockedConflict = this.data.schedule.some((game) => game.completed && game.round >= round)
     if (lockedConflict) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     const keptGames = this.data.schedule.filter((game) => game.round < round || game.completed)
@@ -1797,21 +1797,21 @@ Page({
 
   insertBenchFromNextRound() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     if (this.data.activityStatus === 'ended') {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const hasBench = this.data.participants.some((player) => player.status === 'bench' || player.status === 'late')
     if (!hasBench) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const promoted = autoPromoteBench(this.data.participants, this.data)
     if (!promoted.changed) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     const participants = promoted.participants
@@ -1825,7 +1825,7 @@ Page({
         const result = this.buildSchedule([])
         if (result) this.applyScheduleResult(result, '排阵已生成', { activeTab: 'games' })
       } else {
-        this.showError('')
+        showError('排阵失败')
       }
     })
   },
@@ -1846,15 +1846,15 @@ Page({
     const gameCount = Math.floor(Number(forcedRemaining || configuredGameCount))
     const courtCount = Math.max(1, Math.floor(Number(this.data.courtCount) || 1))
     if (players.length < 4) {
-      this.showError('')
+      showError('操作失败')
       return null
     }
     if (players.length > MAX_PLAYERS) {
-      this.showError('')
+      showError('操作失败')
       return null
     }
     if (!gameCount || gameCount < 1) {
-      this.showError('')
+      showError('操作失败')
       return null
     }
     return generateSchedule(players, gameCount, courtCount, {
@@ -1881,7 +1881,7 @@ Page({
 
   applyScheduleResult(result, message, extraState) {
     if (!result.games.length) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     const now = new Date()
@@ -2011,12 +2011,12 @@ Page({
     const targetScoreA = Number(target.scoreA)
     const targetScoreB = Number(target.scoreB)
     if (target.scoreA === '' || target.scoreB === '' || Number.isNaN(targetScoreA) || Number.isNaN(targetScoreB)) {
-      this.showError('')
+      showError('计分失败')
       return
     }
     const targetResult = this.buildGameResult(target, targetScoreA, targetScoreB)
     if (!targetResult) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     const schedule = this.data.schedule.map((game) => {
@@ -2109,7 +2109,7 @@ Page({
 
   copyShareText() {
     if (!this.data.shareText) {
-      this.showError('')
+      showError('复制失败')
       return
     }
     wx.setClipboardData({ data: this.data.shareText, success: () => wx.showToast({ title: '分享文本已复制', icon: 'success' }) })
@@ -2118,7 +2118,7 @@ Page({
   exportPoster() {
     if (!this.data.schedule.length) {
       wx.hideLoading()
-      this.showError('')
+      showError('加载失败，请重试')
       return
     }
 
@@ -2271,7 +2271,7 @@ Page({
           this.setData({ posterPath: res.tempFilePath })
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => { wx.hideLoading(); this.showError('') }
+        fail: () => { wx.hideLoading(); this.showError('海报生成失败') }
       }, this)
     })
   },
@@ -2282,7 +2282,7 @@ Page({
     const snapshot = this.data.resultSnapshot || this.buildResultSnapshot(this.data.schedule, this.data.stats, this.data.review)
     if (!snapshot || !snapshot.totalGames) {
       wx.hideLoading()
-      this.showError('')
+      showError('加载失败，请重试')
       return
     }
     const ratio = Math.max(2, Math.min(4, getPixelRatio()))
@@ -2379,7 +2379,7 @@ Page({
           this.setData({ posterPath: res.tempFilePath })
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => { wx.hideLoading(); this.showError('') }
+        fail: () => { wx.hideLoading(); this.showError('海报生成失败') }
       }, this)
     })
   },
@@ -2387,7 +2387,7 @@ Page({
   exportQrPoster() {
     if (!this.data.qrCodeFileID && !this.data.qrLocalPath) {
       this.generateQrCode()
-      this.showError('')
+      showError('海报生成失败')
       return
     }
     wx.showLoading({ title: '生成中' })
@@ -2432,13 +2432,13 @@ Page({
           },
           fail: () => {
             wx.hideLoading()
-            this.showError('')
+            showError('加载失败，请重试')
           }
         }, this)
       })
     }).catch(() => {
       wx.hideLoading()
-      this.showError('')
+      showError('加载失败，请重试')
     })
   },
 
@@ -2493,7 +2493,7 @@ Page({
 
   clearSchedule() {
     if (this.data.schedule.some((game) => game.completed)) {
-      this.showError('')
+      showError('排阵失败')
       return
     }
     this.setData({
@@ -2552,11 +2552,11 @@ Page({
 
   updatePlayer(id, patch) {
     if (this.hasRosterEditLocked()) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.role !== 'admin' && this.data.rosterLocked) {
-      this.showError('')
+      showError('操作失败')
       return
     }
     if (this.data.role !== 'admin' && this.data.cloudReady) {
@@ -2586,7 +2586,7 @@ Page({
         return
       }
       if (!target || target.openid !== this.data.openid) {
-        this.showError('')
+        showError('操作失败')
         return
       }
       this.signupToCloud(Object.assign({}, target, patch, {
@@ -3037,7 +3037,7 @@ Page({
     }).catch(() => {
       if (this.homeRequestId !== requestId) return
       this.setData({ syncing: false })
-      this.showError('')
+      showError('操作失败')
     })
   },
 
@@ -3370,7 +3370,7 @@ Page({
 
   signupToCloud(player) {
     if (!this.data.activityId) {
-      this.showError('')
+      showError('同步失败，请重试')
       return
     }
     this.setData({ syncing: true })
@@ -3388,7 +3388,7 @@ Page({
       this.refreshHomeData()
     }).catch(() => {
       this.setData({ syncing: false })
-      this.showError('')
+      showError('加载失败，请重试')
     })
   },
 
@@ -3424,11 +3424,11 @@ Page({
 
   canAdminEdit() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return false
     }
     if (this.data.rosterLocked) {
-      this.showError('')
+      showError('操作失败')
       return false
     }
     if (this.hasRosterEditLocked()) {
@@ -3449,7 +3449,7 @@ Page({
 
   canAdminEditSettings() {
     if (this.data.role !== 'admin') {
-      this.showError('')
+      showError('操作失败')
       return false
     }
     return true
@@ -3461,7 +3461,7 @@ Page({
       filePath: path,
       success: () => wx.showToast({ title: title || '海报已保存到相册', icon: 'success' }),
       fail: () => {
-        this.showError('')
+        showError('保存失败')
       }
     })
   },
