@@ -1,6 +1,6 @@
 <view class="page" data-theme="{{theme}}">
   <view class="topbar">
-    <view class="brand-row">
+    <view class="brand-row" style="overflow:hidden;flex:1;min-width:0">
       <view class="brand-mark">Y</view>
       <view class="brand-copy">
         <text class="title">羽毛球打转</text>
@@ -9,9 +9,11 @@
         <text wx:else class="subtitle">首页 - 最近活动</text>
       </view>
     </view>
-    <button class="theme-toggle" bindtap="toggleDarkMode">{{theme === 'dark' ? '☀️' : '🌙'}}</button>
-    <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
-    <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
+    <view class="topbar-right">
+      <button class="theme-toggle" bindtap="toggleDarkMode">{{theme === 'dark' ? '☀️' : '🌙'}}</button>
+      <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
+      <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
+    </view>
   </view>
 
   <view wx:if="{{mainTab === 'launch'}}" class="flow-card">

@@ -2261,12 +2261,12 @@ Page({
     const padding = 18
     const cardX = padding
     const cardW = width - padding * 2
-    const gameCardH = 104
+    const gameCardH = 116
     const statRowH = 28
     const completedCount = this.data.schedule.filter((game) => game.completed || game.result).length
     const posterStats = this.data.rankingStats.length ? this.data.rankingStats : this.data.stats
     const statCount = Math.min(8, posterStats.length)
-    const bodyHeight = 172 + this.data.schedule.length * gameCardH + 18 + 46 + statCount * statRowH + 48
+    const bodyHeight = 196 + this.data.schedule.length * gameCardH + 18 + 46 + statCount * statRowH + 48
     const height = Math.max(680, bodyHeight)
     const title = this.data.activityTitle || '羽毛球活动'
     const subtitle = `${this.data.activityDate || '时间待定'} | ${this.data.activityVenue || '场地待定'}`
@@ -2280,7 +2280,7 @@ Page({
     ctx.fillRect(0, 0, width, height)
 
     // ---- 头部 ----
-    this._roundRect(ctx, cardX, 12, cardW, 140, 12, t.cardBg)
+    this._roundRect(ctx, cardX, 12, cardW, 160, 12, t.cardBg)
     ctx.setFillStyle(t.text)
     ctx.setFontSize(16)
     ctx.fillText(String(title).slice(0, 24), padding + 2, 36)
@@ -2290,7 +2290,7 @@ Page({
     ctx.fillText(`导出 ${this.data.generatedAt || this.formatTime(new Date())}`, padding + 2, 70)
 
     // ---- 概览小标签（一行 4 个，字号缩小）----
-    const summaryY = 84
+    const summaryY = 100
     const gap4 = 8
     const sw4 = (cardW - 12 - gap4 * 3) / 4
     const summary = [
@@ -2313,7 +2313,7 @@ Page({
     ctx.setTextAlign('left')
 
     // ---- 轮转安排 ----
-    let y = 172
+    let y = 192
     ctx.setFillStyle(t.text)
     ctx.setFontSize(13)
     ctx.fillText('轮转安排', padding, y)
@@ -2322,7 +2322,7 @@ Page({
     const writeTeam = (x, leftW, text) => {
       const lines = this._wrapText(ctx, text, leftW - 4)
       lines.forEach((line, li) => {
-        ctx.fillText(line, x + 2, y + 22 + li * 14)
+        ctx.fillText(line, x + 2, y + 24 + li * 16)
       })
       return lines.length
     }
