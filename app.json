@@ -1,12 +1,35 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/launch/index"
   ],
   "window": {
     "navigationBarTitleText": "羽毛球打转",
     "navigationBarBackgroundColor": "#16744F",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#EEF3EF"
+  },
+  "subPackages": [
+    {
+      "root": "pages/stats",
+      "name": "stats",
+      "pages": [
+        "index"
+      ]
+    },
+    {
+      "root": "pages/history",
+      "name": "history",
+      "pages": [
+        "index"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": ["stats", "history"]
+    }
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",

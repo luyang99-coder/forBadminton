@@ -1,0 +1,4 @@
+/* pages/stats/index.wxss */
+/* Import main styles */
+@import "../index/styles/theme.wxss";
+@import "../index/styles/base.wxss";

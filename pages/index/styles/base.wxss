@@ -881,3 +881,153 @@
 @media (max-width: 360rpx) {
   .finish-score { height: 52rpx; line-height: 52rpx; font-size: 24rpx; }
 }
+
+/* ============================================================
+   Radar Chart (CSS-only bar chart)
+   ============================================================ */
+.radar-section {
+  margin-bottom: 18rpx;
+}
+
+.radar-section .section-subtitle {
+  color: #64748b;
+  display: block;
+  font-size: 22rpx;
+  margin-bottom: 14rpx;
+}
+
+.radar-grid {
+  align-items: flex-end;
+  display: flex;
+  gap: 12rpx;
+  justify-content: space-around;
+  min-height: 200rpx;
+  padding: 10rpx 0;
+}
+
+.radar-item {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
+}
+
+.radar-bar-wrap {
+  align-items: flex-end;
+  background: #f1f5f9;
+  border-radius: 6rpx 6rpx 0 0;
+  display: flex;
+  height: 140rpx;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.radar-bar {
+  background: linear-gradient(180deg, #16744f, #2d9f78);
+  border-radius: 4rpx 4rpx 0 0;
+  transition: height 0.3s ease;
+  width: 100%;
+  max-width: 56rpx;
+  min-height: 4rpx;
+}
+
+.radar-label {
+  color: #64748b;
+  font-size: 22rpx;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-value {
+  color: #111827;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+/* ============================================================
+   近期趋势行
+   ============================================================ */
+.trend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.trend-row {
+  align-items: center;
+  display: grid;
+  gap: 10rpx;
+  grid-template-columns: 120rpx minmax(0, 1fr) 180rpx;
+  min-height: 48rpx;
+}
+@media (max-width: 360rpx) {
+  .trend-row {
+    grid-template-columns: 100rpx minmax(0, 1fr) 150rpx;
+    gap: 8rpx;
+  }
+}
+
+.trend-label {
+  color: #475569;
+  font-size: 22rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trend-track {
+  background: #e2e8f0;
+  border-radius: 999rpx;
+  height: 18rpx;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.trend-fill {
+  background: #0f766e;
+  border-radius: 999rpx;
+  height: 18rpx;
+  transition: width 0.3s ease;
+}
+
+.trend-stat {
+  color: #64748b;
+  font-size: 22rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* ============================================================
+   本周活跃度摘要
+   ============================================================ */
+.weekly-summary {
+  align-items: center;
+  background: #f0fdf4;
+  border: 1rpx solid #bbf7d0;
+  border-radius: 8rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 14rpx;
+}
+
+.weekly-label {
+  color: #166534;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.weekly-value {
+  color: #15803d;
+  font-size: 24rpx;
+}

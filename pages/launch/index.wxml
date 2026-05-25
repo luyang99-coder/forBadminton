@@ -1,0 +1,3 @@
+<!-- launch/index.wxml -->
+<import src="../index/index.wxml" />
+<template is="page" data="{{ ...mainData }}" />

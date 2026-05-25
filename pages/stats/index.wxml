@@ -1,0 +1,4 @@
+<!-- stats/index.wxml -->
+<!-- 统计页 — 作为分包独立页面 -->
+<import src="../index/index.wxml" />
+<template is="page" data="{{ ...mainData }}" />

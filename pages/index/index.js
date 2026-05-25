@@ -55,6 +55,7 @@ Page({
     cloudActivityHasMore: false,
     activeHasMore: false,
     endedHasMore: false,
+    myActivities: [],
     profileTrend: [],
     profileAvatarText: 'Guest',
     profileTitle: 'My badminton profile',
@@ -176,8 +177,11 @@ Page({
     errorText: '',
     generatedAt: '',
     shareText: '',
-    posterPath: ''
-    ,
+    posterPath: '',
+    darkMode: '',
+    theme: 'light',
+    radarStats: [],
+    weeklyStats: null,
     userKey: '',
     localOwnerKey: '',
     openid: '',
@@ -209,7 +213,8 @@ Page({
   onLoad(options) {
     const userKey = this.getLocalUserKey()
     this.data.userKey = userKey
-    this.setData({ userKey })
+    const savedTheme = wx.getStorageSync('darkMode') || 'light'
+    this.setData({ userKey, theme: savedTheme, darkMode: savedTheme === 'dark' ? 'dark' : '' })
     this.loadHistory()
     if (options && options.scene) {
       const scene = decodeURIComponent(options.scene)
@@ -219,12 +224,17 @@ Page({
       })
       options.role = 'player'
     }
+    // 从分包跳转时的参数
+    var initialTab = (options && options.tab) || ''
     this.initCloudSession(() => {
       if (options && options.activityId) {
         this.setData({ mainTab: 'launch' })
-        this.loadActivity(options.activityId, options.role === 'admin' ? 'admin' : 'player')
+        this.loadActivity(options.activityId, options.role === 'admin' ? 'admin' : 'player', initialTab)
       } else {
         this.refreshPlayerOptions()
+        if (initialTab === 'history') {
+          this.setData({ activeTab: 'history' })
+        }
       }
       this.refreshRecommended()
       this.refreshHomeData()
@@ -282,6 +292,13 @@ Page({
     this.setData({ mainTab: tab }, () => this.refreshHomeData())
   },
 
+  toggleDarkMode() {
+    const theme = this.data.theme === 'dark' ? 'light' : 'dark'
+    this.setData({ theme, darkMode: theme === 'dark' ? 'dark' : '' }, () => {
+      wx.setStorageSync('darkMode', theme)
+    })
+  },
+
   onHomeKeywordInput(event) {
     this.setData({ homeKeyword: event.detail.value || '' }, () => this.triggerHomeQuery())
   },
@@ -310,6 +327,60 @@ Page({
       return
     }
     this.applyHomeFilters()
+  },
+
+  /** 重新开启已结束活动：复制到新活动 */
+  reactivateActivity(event) {
+    const activityId = event.currentTarget.dataset.id
+    if (!activityId) return
+    const activities = wx.getStorageSync(ACTIVITIES_KEY) || {}
+    const activity = activities[activityId]
+    if (!activity) {
+      showError('操作失败')
+      return
+    }
+    const newId = nowId('a')
+    const newActivity = Object.assign({}, activity, {
+      activityId: newId,
+      activityTitle: `${activity.activityTitle || '羽毛球活动'} (续)`,
+      activityStatus: 'signup',
+      activityStatusText: '报名中',
+      registrationOpen: true,
+      rosterLocked: false,
+      schedule: [],
+      stats: [],
+      rankingStats: [],
+      repeatedPartners: [],
+      scheduleQuality: null,
+      review: {
+        bestPartner: '-',
+        bestWinRate: '-',
+        mostBalancedGame: '-',
+        repeatRisk: '-'
+      },
+      resultSnapshot: null,
+      generatedAt: '',
+      shareText: '',
+      qrCodeFileID: '',
+      qrLocalPath: '',
+      posterPath: '',
+      progressData: { doneNum: 0, totalNum: 0, progress: 0 },
+      errorText: '',
+      localOwnerKey: this.data.userKey,
+      ownerOpenid: this.data.openid || '',
+      adminOpenids: [],
+      syncing: false,
+      lastSyncedAt: '',
+      syncText: '刚刚'
+    })
+    delete newActivity.deleted
+    delete newActivity.updatedAt
+    activities[newId] = newActivity
+    wx.setStorageSync(ACTIVITIES_KEY, activities)
+    this.setData({ mainTab: 'launch' }, () => {
+      this.loadActivity(newId, 'admin')
+    })
+    wx.showToast({ title: '已复制为新活动', icon: 'success' })
   },
 
   startNewActivity() {
@@ -570,7 +641,23 @@ Page({
     this.loadLocalActivity(activityId, role, '')
   },
 
-  loadLocalActivity(activityId, role, message) {
+  loadActivity(activityId, role, initialTab) {
+    if (this.data.cloudReady) {
+      this.callCloud('getActivity', { activityId }).then((res) => {
+        if (!res.ok) {
+          this.loadLocalActivity(activityId, role, res.message || '', initialTab)
+          return
+        }
+        this.applyCloudActivity(res.activity, role, res.isOwner, res.isAdmin, initialTab)
+      }).catch(() => {
+        this.loadLocalActivity(activityId, role, '', initialTab)
+      })
+      return
+    }
+    this.loadLocalActivity(activityId, role, '', initialTab)
+  },
+
+  loadLocalActivity(activityId, role, message, initialTab) {
     const activities = wx.getStorageSync(ACTIVITIES_KEY) || {}
     const activity = activities[activityId]
     if (!activity || activity.deleted) {
@@ -578,6 +665,9 @@ Page({
       return
     }
     const presetCount = rotationLimitFromActivity(activity)
+    var activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
+    if (initialTab === 'stats') activeTab = 'stats'
+    if (initialTab === 'history') activeTab = 'history'
     this.setData(Object.assign({}, activity, {
       singleGender: activity.singleGender === 'female' ? 'female' : 'male',
       singleLevel: normalizeLevel(activity.singleLevel),
@@ -593,7 +683,7 @@ Page({
       role,
       activityId,
       localOwnerKey: activity.localOwnerKey || '',
-      activeTab: activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
+      activeTab: activeTab
     }), () => {
       this.refreshPlayerOptions()
       this.refreshRecommended()
@@ -604,7 +694,7 @@ Page({
     })
   },
 
-  applyCloudActivity(activity, preferredRole, isOwner, isAdmin) {
+  applyCloudActivity(activity, preferredRole, isOwner, isAdmin, initialTab) {
     if (!activity) return
     const canAdmin = !!isAdmin || !!isOwner
     const role = canAdmin ? 'admin' : (preferredRole === 'admin' ? 'player' : preferredRole)
@@ -617,6 +707,9 @@ Page({
       this.data.activityId === activity.activityId &&
       this.data.schedule.length &&
       presentKey(this.data.participants) !== presentKey(activity.participants)
+    var activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
+    if (initialTab === 'stats') activeTab = 'stats'
+    if (initialTab === 'history') activeTab = 'history'
     this.setData(Object.assign({}, activity, {
       singleGender: activity.singleGender === 'female' ? 'female' : 'male',
       singleLevel: normalizeLevel(activity.singleLevel),
@@ -632,7 +725,7 @@ Page({
       role,
       activityId: activity.activityId,
       localOwnerKey: activity.localOwnerKey || '',
-      activeTab: activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab),
+      activeTab: activeTab,
       isOwner,
       isAdmin: canAdmin,
       cloudReady: true,
@@ -852,6 +945,7 @@ Page({
       rosterLocked: true,
       activeTab: 'stats',
       review,
+      radarStats: this.buildRadarStats(this.data.stats, this.data.schedule),
       resultSnapshot,
       errorText: ''
     }, () => {
@@ -865,6 +959,20 @@ Page({
     wx.setClipboardData({
       data: `/pages/index/index?activityId=${activityId}&role=player`
     })
+    wx.showToast({ title: '链接已复制', icon: 'success' })
+  },
+
+  /** 生成活动二维码（公开入口，队员也可使用） */
+  generateActivityQr() {
+    if (!this.data.activityId) {
+      const activityId = nowId('a')
+      this.setData({ activityId }, () => this.createActivity())
+    }
+    if (this.data.cloudReady) {
+      this.generateQrCode()
+    } else {
+      this.generateLocalQrCode('')
+    }
   },
 
   generateQrCode() {
@@ -1896,6 +2004,7 @@ Page({
       repeatedPartners: result.repeatedPartners,
       scheduleQuality: result.quality,
       review: this.buildReview(result.games, result.stats, result.repeatedPartners),
+      radarStats: this.buildRadarStats(result.stats, result.games),
       generatedAt,
       shareText,
       errorText: result.playableCourts < courtCount ? `当前人数最多同时使用 ${result.playableCourts} 片场地，已按可用场地生成。` : ''
@@ -2000,6 +2109,29 @@ Page({
     this.applyScoreUpdate(schedule, '快速计分完成')
   },
 
+  quickFinish(event) {
+    const id = event.currentTarget.dataset.id
+    const scoreA = Number(event.currentTarget.dataset.scorea)
+    const scoreB = Number(event.currentTarget.dataset.scoreb)
+    const target = this.data.schedule.find((game) => game.id === id)
+    if (!this.canScoreGame(target)) {
+      this.showError('只有当前轮转队员或管理员可以录入比分')
+      return
+    }
+    const schedule = this.data.schedule.map((game) => {
+      if (game.id !== id || game.completed) return game
+      const result = this.buildGameResult(game, scoreA, scoreB)
+      if (!result) return game
+      return Object.assign({}, game, {
+        scoreA: String(scoreA),
+        scoreB: String(scoreB),
+        completed: true,
+        result
+      })
+    })
+    this.applyScoreUpdate(schedule, '一键胜出')
+  },
+
   saveResult(event) {
     const id = event.currentTarget.dataset.id
     const target = this.data.schedule.find((game) => game.id === id)
@@ -2057,6 +2189,7 @@ Page({
       rankingStats: this.buildRankingStats(schedule, players),
       progressData: this.buildProgressData(schedule),
       review: this.buildReview(schedule, stats, this.data.repeatedPartners),
+      radarStats: this.buildRadarStats(stats, schedule),
       shareText: this.buildShareText(schedule, stats),
       errorText: ''
     }, () => {
@@ -2879,17 +3012,141 @@ Page({
     const champion = ranking[0]
     const netPointLeader = ranking.slice().sort((a, b) => b.netPoints - a.netPoints)[0]
     const riskCount = (repeatedPartners || []).filter((item) => item.count > 1).length
-    return {
-      champion: champion && champion.games ? `${champion.name} ${champion.wins}-${champion.losses}` : '暂无',
-      netPointLeader: netPointLeader && netPointLeader.games ? `${netPointLeader.name} +${netPointLeader.netPoints}` : '暂无',
-      avgSkillGap,
-      closeGame: closeGame ? `第${closeGame.round}轮 ${closeGame.result.scoreA}:${closeGame.result.scoreB}` : '暂无',
-      bestPartner: bestPartner ? `${bestPartner.names}，赢 ${bestPartner.wins || 0} 次` : '暂无',
-      bestWinRate: bestPlayer ? `${bestPlayer.name} ${bestPlayer.winRate}` : '暂无',
-      mostBalancedGame: balanced ? `第${balanced.round}轮 ${balanced.court}号场，强弱差 ${balanced.skillGap}` : '暂无',
-      repeatRisk: riskCount ? `${riskCount} 组搭档重复` : '',
-      completedText: `${completed.length} 局已记录比分`
+
+    // --- 增强统计：搭档胜率 ---
+    const bestPartnerWinRate = bestPartner && (bestPartner.wins || 0) + (bestPartner.losses || 0) > 0
+      ? `${Math.round((bestPartner.wins / (bestPartner.wins + bestPartner.losses)) * 100)}% (${bestPartner.wins}胜${bestPartner.losses}负)`
+      : (bestPartner ? `100% (${bestPartner.wins || 0}胜0负)` : '暂无')
+
+    // --- 增强统计：最难缠对手 ---
+    const opponentStats = {}
+    let toughestOpponent = '暂无'
+    completed.forEach(function (game) {
+      if (!game || !game.teamAText || !game.teamBText) return
+      const allPlayers = (game.teamAIds || []).concat(game.teamBIds || [])
+      allPlayers.forEach(function (pid) {
+        if (!opponentStats[pid]) opponentStats[pid] = { name: '', count: 0, wins: 0, losses: 0 }
+      })
+      if (game.result && game.result.winner && game.teamAIds && game.teamBIds) {
+        const winners = game.result.winner === 'A' ? game.teamAIds : game.teamBIds
+        const losers = game.result.winner === 'A' ? game.teamBIds : game.teamAIds
+        winners.forEach(function (wid) {
+          if (opponentStats[wid]) opponentStats[wid].wins++
+        })
+        losers.forEach(function (lid) {
+          if (opponentStats[lid]) opponentStats[lid].losses++
+        })
+      }
+      if (game.teamAIds) game.teamAIds.forEach(function (pid) {
+        if (opponentStats[pid]) opponentStats[pid].count++
+      })
+      if (game.teamBIds) game.teamBIds.forEach(function (pid) {
+        if (opponentStats[pid]) opponentStats[pid].count++
+      })
+    })
+    ;(stats || []).forEach(function (s) {
+      if (opponentStats[s.id]) opponentStats[s.id].name = s.name
+    })
+    // 找对战最多且胜率最低的对手
+    const opponentList = Object.keys(opponentStats).filter(function (id) {
+      return opponentStats[id].count > 0 && opponentStats[id].name
+    }).map(function (id) {
+      var o = opponentStats[id]
+      o.games = o.wins + o.losses
+      o.winRate = o.games > 0 ? o.wins / o.games : 0
+      return o
+    }).filter(function (o) { return o.games > 0 })
+    var sortedOpponents = opponentList.slice().sort(function (a, b) {
+      if (a.count !== b.count) return b.count - a.count
+      return a.winRate - b.winRate
+    })
+    if (sortedOpponents.length) {
+      var top = sortedOpponents[0]
+      toughestOpponent = top.name + ' ' + top.games + '场 ' + Math.round(top.winRate * 100) + '%胜率'
     }
+
+    // --- 增强统计：本周参赛活跃度 ---
+    var weeklyActivity = '暂无数据'
+    var weeklyStats = null
+    if (games.length) {
+      var today = new Date()
+      var weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+      var weeklyGames = completed.filter(function (g) {
+        return g.recordedAt && new Date(g.recordedAt).getTime() > weekAgo.getTime()
+      })
+      if (!weeklyGames.length) {
+        // 如果没有时间戳，用活动时间或整个对局数
+        weeklyActivity = completed.length + ' 局 (本场)'
+      } else {
+        var wWins = 0; var wLosses = 0
+        weeklyGames.forEach(function (g) {
+          if (g.result && g.result.winner) {
+            wWins += (g.result.winner === 'A' ? (g.teamAIds || []).length : (g.teamBIds || []).length)
+            wLosses += (g.result.winner === 'A' ? (g.teamBIds || []).length : (g.teamAIds || []).length)
+          }
+        })
+        var wTotal = wWins + wLosses
+        weeklyActivity = weeklyGames.length + '局, ' + (wTotal ? (Math.round(wWins / wTotal * 100) + '%胜率') : '')
+      }
+      weeklyStats = { activityCount: 1, gameCount: completed.length, winRate: ' - ' }
+      var wTotal = 0; var wWins = 0
+      completed.forEach(function (g) {
+        if (g.result && g.result.winner) {
+          wTotal += 2
+          wWins += g.result.winner === 'A' ? 2 : 0
+        }
+      })
+      if (wTotal) weeklyStats.winRate = Math.round(wWins / wTotal * 100) + '%'
+    }
+
+    return {
+      champion: champion && champion.games ? champion.name + ' ' + champion.wins + '-' + champion.losses : '暂无',
+      netPointLeader: netPointLeader && netPointLeader.games ? netPointLeader.name + ' +' + netPointLeader.netPoints : '暂无',
+      avgSkillGap: avgSkillGap,
+      closeGame: closeGame ? '第' + closeGame.round + '轮 ' + closeGame.result.scoreA + ':' + closeGame.result.scoreB : '暂无',
+      bestPartner: bestPartner ? bestPartner.names + '，赢 ' + (bestPartner.wins || 0) + ' 次' : '暂无',
+      bestPartnerWinRate: bestPartnerWinRate,
+      bestWinRate: bestPlayer ? bestPlayer.name + ' ' + bestPlayer.winRate : '暂无',
+      toughestOpponent: toughestOpponent,
+      mostBalancedGame: balanced ? '第' + balanced.round + '轮 ' + balanced.court + '号场，强弱差 ' + balanced.skillGap : '暂无',
+      repeatRisk: riskCount ? riskCount + ' 组搭档重复' : '',
+      weeklyActivity: weeklyActivity,
+      completedText: completed.length + ' 局已记录比分'
+    }
+  },
+
+  buildRadarStats(stats, games) {
+    if (!stats || !stats.length) return []
+    var maxGames = stats.length
+    var totalWinRate = 0
+    var totalNetPoints = 0
+    var totalGames = 0
+    var totalWins = 0
+    var totalLosses = 0
+    stats.forEach(function (s) {
+      totalGames += s.games || 0
+      totalWins += s.wins || 0
+      totalLosses += s.losses || 0
+      totalNetPoints += Math.abs(s.netPoints || 0)
+    })
+    totalWinRate = totalGames > 0 ? totalWins / totalGames : 0
+    // 参赛率：实际参赛人数/总人数
+    var participationRate = Math.min(100, Math.round((maxGames / Math.max(1, (stats.length || 1))) * 100))
+    // 净胜分指数
+    var netPointIndex = Math.min(100, Math.round((totalNetPoints / Math.max(1, totalGames)) * 20))
+    // 胜率指数
+    var winRateIndex = Math.min(100, Math.round(totalWinRate * 100))
+    // 均衡指数
+    var balanceIndex = Math.min(100, Math.round((1 - Math.abs(totalWins - totalLosses) / Math.max(1, totalGames)) * 100))
+    // 活跃指数
+    var activityIndex = (games || []).length > 0 ? Math.min(100, Math.round((stats.length / Math.max(1, (games || []).length)) * 100)) : 50
+    return [
+      { label: '胜率', value: winRateIndex, score: Math.round(totalWinRate * 100) + '%' },
+      { label: '净胜', value: netPointIndex, score: totalNetPoints + '' },
+      { label: '均衡', value: balanceIndex, score: balanceIndex + '%' },
+      { label: '参赛', value: participationRate, score: participationRate + '%' },
+      { label: '活跃', value: activityIndex, score: activityIndex + '%' }
+    ]
   },
 
   buildResultSnapshot(games, stats, review) {
@@ -3103,6 +3360,17 @@ Page({
     return this.toActivityCard(this.data.activityId, activity)
   },
 
+  buildMyActivities() {
+    const openid = this.data.openid
+    if (!openid) return []
+    const raw = this.data.homeActivitiesRaw || []
+    return raw.filter((card) => {
+      if (!card || !card.activity) return false
+      const participants = card.activity.participants || []
+      return participants.some((p) => p.openid === openid)
+    }).slice(0, 10)
+  },
+
   applyHomeFilters() {
     const keyword = String(this.data.homeKeyword || '').trim().toLowerCase()
     const raw = (this.data.homeActivitiesRaw || []).slice()
@@ -3124,6 +3392,7 @@ Page({
       recentActivities: activeActivities.concat(endedActivities),
       activeActivities,
       endedActivities,
+      myActivities: this.buildMyActivities(),
       activeHasMore: grouped.activeActivities.length > activeActivities.length,
       endedHasMore: grouped.endedActivities.length > endedActivities.length,
       profileStats: this.buildProfileStats(),
@@ -3311,9 +3580,23 @@ Page({
   },
 
   callCloud(action, data) {
+    // action → 子云函数映射
+    var subFnMap = {
+      signup: 'signup',
+      cancelSignup: 'signup',
+      claimPlayer: 'signup',
+      bindPlayerOpenid: 'signup',
+      saveScore: 'score',
+      getActivityQr: 'roster',
+      addAdmin: 'roster',
+      removeAdmin: 'roster'
+    }
+    var subFn = subFnMap[action]
+    var functionName = subFn ? CLOUD_FUNCTION + '/' + subFn : CLOUD_FUNCTION
+    var callData = subFn ? { action: action, data: data } : { action: action, data: data }
     return wx.cloud.callFunction({
-      name: CLOUD_FUNCTION,
-      data: { action, data }
+      name: functionName,
+      data: callData
     }).then((res) => res.result || { ok: false, message: '云函数无返回。' })
   },
 

@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page" data-theme="{{theme}}">
   <view class="topbar">
     <view class="brand-row">
       <view class="brand-mark">Y</view>
@@ -9,6 +9,7 @@
         <text wx:else class="subtitle">首页 - 最近活动</text>
       </view>
     </view>
+    <button class="theme-toggle" bindtap="toggleDarkMode">{{theme === 'dark' ? '☀️' : '🌙'}}</button>
     <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
     <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
   </view>
@@ -52,13 +53,12 @@
         <view class="activity-card" wx:for="{{activeActivities}}" wx:key="id">
           <view class="activity-main" data-id="{{item.id}}" bindtap="openActivityCard">
             <text class="activity-title">{{item.title}}</text>
-            <text class="activity-meta">{{item.date}} - {{item.venue}}</text>
-            <text class="activity-meta">{{item.playerCount}} 人 - {{item.courtCount}} 片场 - {{item.gameCount}} 局</text>
-            <text class="activity-meta">{{item.roleText}} - 更新 {{item.updatedText || '-'}}</text>
+            <text class="activity-meta"><text class="meta-icon">📅</text> {{item.date}} - <text class="meta-icon">📍</text> {{item.venue}}</text>
+            <text class="activity-meta"><text class="meta-icon">👥</text> {{item.playerCount}} 人 · <text class="meta-icon">🏸</text> {{item.courtCount}} 片场 · <text class="meta-icon">🎯</text> {{item.gameCount}} 局 · {{item.completed}}/{{item.gameCount}} 计分</text>
+            <text class="activity-meta">{{item.roleText}} · {{item.statusText}} · 更新 {{item.updatedText || '-'}}</text>
           </view>
           <view class="activity-status">
             <text>{{item.statusText}}</text>
-            <text>{{item.completed}}/{{item.gameCount}}</text>
           </view>
           <view class="activity-actions">
             <button data-id="{{item.id}}" bindtap="openActivityCard">{{item.entryText}}</button>
@@ -79,16 +79,16 @@
         <view class="activity-card" wx:for="{{endedActivities}}" wx:key="id">
           <view class="activity-main" data-id="{{item.id}}" bindtap="viewActivityResult">
             <text class="activity-title">{{item.title}}</text>
-            <text class="activity-meta">{{item.date}} - {{item.venue}}</text>
-            <text class="activity-meta">{{item.completed}}/{{item.gameCount}} 已计分 - {{item.playerCount}} 人</text>
-            <text class="activity-meta">{{item.roleText}} - 更新 {{item.updatedText || '-'}}</text>
+            <text class="activity-meta"><text class="meta-icon">📅</text> {{item.date}} - <text class="meta-icon">📍</text> {{item.venue}}</text>
+            <text class="activity-meta"><text class="meta-icon">👥</text> {{item.playerCount}} 人 · <text class="meta-icon">🏸</text> {{item.courtCount}} 片场 · <text class="meta-icon">✅</text> {{item.completed}}/{{item.gameCount}} 计分</text>
+            <text class="activity-meta">{{item.roleText}} · 更新 {{item.updatedText || '-'}}</text>
           </view>
           <view class="activity-status">
             <text>{{item.statusText}}</text>
-            <text>{{item.completed}}/{{item.gameCount}}</text>
           </view>
           <view class="activity-actions">
             <button data-id="{{item.id}}" bindtap="viewActivityResult">结果</button>
+            <button class="copy" data-id="{{item.id}}" bindtap="reactivateActivity">重新开启</button>
             <button wx:if="{{item.canRemove}}" class="danger" data-id="{{item.id}}" bindtap="deleteActivityCard">删除</button>
           </view>
         </view>
@@ -98,6 +98,30 @@
 
     <view class="section" wx:if="{{cloudReady && cloudActivityHasMore}}">
       <button class="load-more wide" bindtap="loadMoreCloudActivities">从云端加载更多</button>
+    </view>
+
+    <!-- 我的活动区域 -->
+    <view class="section" wx:if="{{myActivities.length}}">
+      <view class="section-head">
+        <text class="section-title">我的活动</text>
+        <text class="generated">{{myActivities.length}} 场参与</text>
+      </view>
+      <scroll-view class="activity-list small" scroll-y>
+        <view class="activity-card" wx:for="{{myActivities}}" wx:key="id">
+          <view class="activity-main" data-id="{{item.id}}" bindtap="openActivityCard">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-meta">{{item.date}} - {{item.venue}}</text>
+            <text class="activity-meta">👥 {{item.playerCount}} 人 · 🏸 {{item.courtCount}} 片场 · {{item.gameCount}} 局</text>
+            <text class="activity-meta">{{item.roleText}} · {{item.statusText}} · {{item.completed}}/{{item.gameCount}} 已计分</text>
+          </view>
+          <view class="activity-status">
+            <text>{{item.statusText}}</text>
+          </view>
+          <view class="activity-actions">
+            <button data-id="{{item.id}}" bindtap="openActivityCard">进入</button>
+          </view>
+        </view>
+      </scroll-view>
     </view>
 
     <view class="section">
@@ -129,7 +153,7 @@
       <view class="share-actions">
         <button open-type="share" class="copy">分享报名</button>
         <button class="copy" bindtap="copyShareLink">复制链接</button>
-        <button wx:if="{{role === 'admin'}}" class="copy" bindtap="generateQrCode">报名码</button>
+        <button class="copy" bindtap="generateActivityQr">生成二维码</button>
         <button wx:if="{{qrCodeFileID || qrLocalPath}}" class="copy" bindtap="exportQrPoster">海报</button>
       </view>
     </view>
@@ -362,7 +386,11 @@
             <input type="number" value="{{item.scoreA}}" placeholder="A" data-id="{{item.id}}" data-side="A" bindinput="onScoreInput" />
             <button data-id="{{item.id}}" data-side="A" data-delta="-1" bindtap="adjustScore">-</button>
           </view>
-          <button class="finish-score" data-id="{{item.id}}" bindtap="saveResult">完成</button>
+          <view class="quick-finish-row">
+            <button class="quick-finish-btn" data-id="{{item.id}}" data-scoreA="21" data-scoreB="0" bindtap="quickFinish">A 21-0</button>
+            <button class="finish-score" data-id="{{item.id}}" bindtap="saveResult">完成</button>
+            <button class="quick-finish-btn" data-id="{{item.id}}" data-scoreA="0" data-scoreB="21" bindtap="quickFinish">0-21 B</button>
+          </view>
           <view class="score-side">
             <button data-id="{{item.id}}" data-side="B" data-delta="1" bindtap="adjustScore">+</button>
             <input type="number" value="{{item.scoreB}}" placeholder="B" data-id="{{item.id}}" data-side="B" bindinput="onScoreInput" />
@@ -403,11 +431,27 @@
         <view><text>冠军</text><text>{{review.champion}}</text></view>
         <view><text>净胜王</text><text>{{review.netPointLeader}}</text></view>
         <view><text>最佳搭档</text><text>{{review.bestPartner}}</text></view>
+        <view><text>搭档胜率</text><text>{{review.bestPartnerWinRate}}</text></view>
         <view><text>最高胜率</text><text>{{review.bestWinRate}}</text></view>
+        <view><text>最难缠对手</text><text>{{review.toughestOpponent}}</text></view>
         <view><text>最均衡</text><text>{{review.mostBalancedGame}}</text></view>
         <view><text>最接近</text><text>{{review.closeGame}}</text></view>
         <view><text>平均强弱差</text><text>{{review.avgSkillGap}}</text></view>
         <view><text>重复风险</text><text>{{review.repeatRisk}}</text></view>
+        <view><text>本周参赛</text><text>{{review.weeklyActivity}}</text></view>
+        <view><text>对局完成</text><text>{{review.completedText}}</text></view>
+      </view>
+      <view wx:if="{{radarStats.length}}" class="radar-section">
+        <view class="section-subtitle">个人能力雷达图</view>
+        <view class="radar-grid">
+          <view class="radar-item" wx:for="{{radarStats}}" wx:key="label">
+            <view class="radar-bar-wrap">
+              <view class="radar-bar" style="height: {{item.value}}%;"></view>
+            </view>
+            <text class="radar-label">{{item.label}}</text>
+            <text class="radar-value">{{item.score}}</text>
+          </view>
+        </view>
       </view>
       <view class="hint">{{review.completedText}}</view>
       <view class="rank-table" wx:if="{{rankingStats.length}}">
@@ -453,10 +497,14 @@
       <view class="section-title">近期趋势</view>
       <view class="trend-list">
         <view class="trend-row" wx:for="{{profileTrend}}" wx:key="label">
-          <text>{{item.label}}</text>
+          <text class="trend-label">{{item.label}}</text>
           <view class="trend-track"><view class="trend-fill" style="width: {{item.winRate}}%;"></view></view>
-          <text>{{item.winRate}}% - {{item.netPoints}}</text>
+          <text class="trend-stat">{{item.winRate}}% · {{item.netPoints}} 净胜 · {{item.games}}局</text>
         </view>
+      </view>
+      <view class="weekly-summary" wx:if="{{weeklyStats}}">
+        <text class="weekly-label">本周参赛活跃度：</text>
+        <text class="weekly-value">{{weeklyStats.activityCount}} 次活动 · {{weeklyStats.gameCount}} 局 · {{weeklyStats.winRate}} 胜率</text>
       </view>
     </view>
 

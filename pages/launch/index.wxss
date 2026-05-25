@@ -1,0 +1,3 @@
+/* pages/launch/index.wxss */
+@import "../index/styles/theme.wxss";
+@import "../index/styles/base.wxss";

@@ -1,0 +1,18 @@
+{
+  "name": "forBadminton",
+  "version": "1.0.0",
+  "description": "羽毛球打转 — 微信小程序",
+  "private": true,
+  "scripts": {
+    "lint": "eslint pages/ cloudfunctions/ --ext .js,.wxs",
+    "lint:fix": "eslint pages/ cloudfunctions/ --ext .js,.wxs --fix",
+    "format": "prettier --write \"pages/**/*.{js,wxss,wxml,json}\" \"cloudfunctions/**/*.js\" \"!**/node_modules/**\""
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

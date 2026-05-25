@@ -1,16 +1,113 @@
-/* UI refresh inspired by the reference badminton assistant */
+/* ============================================================
+   theme.wxss �?主题样式
+   使用 CSS 变量统一管理主题色（�?#16744f / 琥珀 #f0b429�?   支持跟随系统深色模式 & 手动切换
+   ============================================================ */
+
+/* ---------- CSS Custom Properties（必须放最前面�?---------- */
+:root,
+page {
+  --color-bg: #f3f6f8;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8fafc;
+  --color-surface-3: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-light: #edf0f2;
+  --color-text: #17201b;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-primary: #16744f;
+  --color-primary-dark: #0f5e41;
+  --color-primary-light: #eef5f1;
+  --color-accent: #f0b429;
+  --color-accent-light: #fff8e1;
+  --color-danger: #be123c;
+  --color-danger-light: #fff1f2;
+  --color-avatar: #e2e8f0;
+  --color-avatar-text: #475569;
+  --color-hero-bg: #12342d;
+  --color-hero-text: #fff;
+  --bottom-nav-bg: rgba(255, 255, 255, 0.9);
+  --bottom-nav-border: #e5e7eb;
+}
+
+/* ---------- 跟随系统深色模式 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root,
+  page {
+    --color-bg: #0f0f10;
+    --color-surface: #1a1a1d;
+    --color-surface-2: #222225;
+    --color-surface-3: #2a2a2e;
+    --color-border: #333338;
+    --color-border-light: #2a2a2e;
+    --color-text: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-muted: #6b7280;
+    --color-primary: #2d9f78;
+    --color-primary-dark: #1a8a62;
+    --color-primary-light: #1a2f26;
+    --color-accent: #f5c14d;
+    --color-accent-light: #2a2418;
+    --color-danger: #f87171;
+    --color-danger-light: #2a181a;
+    --color-avatar: #333338;
+    --color-avatar-text: #9ca3af;
+    --color-hero-bg: #1a1a1d;
+    --color-hero-text: #e5e7eb;
+    --bottom-nav-bg: rgba(26, 26, 29, 0.92);
+    --bottom-nav-border: #333338;
+  }
+}
+
+/* ---------- 手动切换深色模式 ---------- */
+[data-theme="dark"] {
+  --color-bg: #0f0f10;
+  --color-surface: #1a1a1d;
+  --color-surface-2: #222225;
+  --color-surface-3: #2a2a2e;
+  --color-border: #333338;
+  --color-border-light: #2a2a2e;
+  --color-text: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-primary: #2d9f78;
+  --color-primary-dark: #1a8a62;
+  --color-primary-light: #1a2f26;
+  --color-accent: #f5c14d;
+  --color-accent-light: #2a2418;
+  --color-danger: #f87171;
+  --color-danger-light: #2a181a;
+  --color-avatar: #333338;
+  --color-avatar-text: #9ca3af;
+  --color-hero-bg: #1a1a1d;
+  --color-hero-text: #e5e7eb;
+  --bottom-nav-bg: rgba(26, 26, 29, 0.92);
+  --bottom-nav-border: #333338;
+}
+
+/* ============================================================
+   样式定义（使�?CSS 变量�?   ============================================================ */
+
 .page {
-  background:
-    linear-gradient(135deg, rgba(22, 116, 79, 0.14), transparent 34%),
-    linear-gradient(315deg, rgba(242, 180, 65, 0.16), transparent 30%),
-    #eef3ef;
-  color: #1d2420;
+  background: var(--color-bg);
+  color: var(--color-text);
   padding: 24rpx 24rpx 230rpx;
 }
 
 .topbar {
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-border);
+  border-radius: 8rpx;
   gap: 18rpx;
   margin-bottom: 20rpx;
+  padding: 18rpx;
+}
+
+.topbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
 }
 
 .brand-row {
@@ -22,17 +119,17 @@
 
 .brand-mark {
   align-items: center;
-  background: linear-gradient(135deg, #16744f, #1f9b6d 55%, #f2b441);
-  border-radius: 50%;
-  box-shadow: 0 12rpx 28rpx rgba(22, 116, 79, 0.24);
+  background: var(--color-primary);
+  border-radius: 8rpx;
+  box-shadow: none;
   color: #fff;
   display: flex;
-  flex: 0 0 76rpx;
-  font-size: 34rpx;
+  flex: 0 0 64rpx;
+  font-size: 30rpx;
   font-weight: 800;
-  height: 76rpx;
+  height: 64rpx;
   justify-content: center;
-  width: 76rpx;
+  width: 64rpx;
 }
 
 .brand-copy {
@@ -40,9 +137,11 @@
 }
 
 .title {
-  color: #10251f;
-  font-size: 40rpx;
-  font-weight: 800;
+  color: var(--color-text);
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .subtitle,
@@ -51,50 +150,35 @@
 .generated,
 .hint,
 .rest {
-  color: #68736d;
+  color: var(--color-text-muted);
 }
 
 .pill {
-  background: rgba(216, 238, 227, 0.9);
-  border-color: rgba(22, 116, 79, 0.26);
-  color: #0f5e41;
-  box-shadow: 0 10rpx 24rpx rgba(32, 54, 42, 0.08);
+  background: var(--color-primary-light);
+  border-color: rgba(45, 159, 120, 0.3);
+  border-radius: 999rpx;
+  color: var(--color-primary);
+  flex: 0 0 auto;
+  font-size: 24rpx;
+  font-weight: 700;
+  padding: 12rpx 20rpx;
 }
 
 .home-hero {
-  background: #12342d;
+  background: var(--color-hero-bg);
   border: 1rpx solid rgba(255, 255, 255, 0.36);
   border-radius: 8rpx;
-  box-shadow: 0 22rpx 65rpx rgba(16, 37, 31, 0.23);
-  color: #fff;
-  min-height: 276rpx;
+  box-shadow: none;
+  color: var(--color-hero-text);
+  min-height: 0;
   overflow: hidden;
   padding: 30rpx;
   position: relative;
 }
 
-.home-hero::after {
-  background:
-    linear-gradient(90deg, rgba(10, 25, 21, 0.82) 0%, rgba(10, 25, 21, 0.44) 58%, rgba(10, 25, 21, 0.24) 100%);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 1;
-}
-
+.home-hero::after,
 .home-hero-image {
-  bottom: 0;
-  height: 100%;
-  left: 0;
-  opacity: 0.92;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  z-index: 0;
+  display: none;
 }
 
 .home-hero > view,
@@ -104,7 +188,7 @@
 }
 
 .home-title {
-  color: #fff;
+  color: var(--color-hero-text);
   font-size: 42rpx;
   font-weight: 900;
   line-height: 1.08;
@@ -117,19 +201,30 @@
 
 .home-hero button,
 .bottom-nav .launch {
-  background: #f5c14d;
-  color: #10251f;
-  box-shadow: 0 12rpx 28rpx rgba(242, 180, 65, 0.22);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  box-shadow: none;
 }
 
 .section,
 .flow-card,
 .profile-card,
-.empty-state {
-  background: rgba(255, 255, 255, 0.86);
-  border: 1rpx solid rgba(31, 46, 38, 0.12);
+.empty-state,
+.activity-card,
+.record-card,
+.roster-item,
+.progress-card,
+.game-card.done,
+.team,
+.score-side,
+.constraint-chip,
+.roster-tools,
+.signup-box {
+  background: var(--color-surface);
+  border: 1rpx solid var(--color-border);
   border-radius: 8rpx;
-  box-shadow: 0 18rpx 55rpx rgba(32, 54, 42, 0.12);
+  box-shadow: none;
 }
 
 .section {
@@ -137,19 +232,22 @@
 }
 
 .section-title {
-  color: #10251f;
-  font-weight: 850;
+  color: var(--color-text);
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-bottom: 18rpx;
 }
 
 .flow-card {
   gap: 12rpx;
   grid-template-columns: minmax(0, 1fr) 30rpx minmax(0, 1fr) 30rpx minmax(0, 1fr);
-  padding: 14rpx;
+  padding: 12rpx;
 }
 
 .flow-step {
-  background: rgba(255, 255, 255, 0.76);
-  border: 1rpx solid rgba(31, 46, 38, 0.12);
+  background: var(--color-surface-2);
+  border: 1rpx solid var(--color-border);
   border-radius: 8rpx;
   gap: 8rpx;
   justify-content: flex-start;
@@ -158,33 +256,33 @@
 }
 
 .flow-step.active {
-  background: linear-gradient(135deg, #16744f, #23856a);
-  border-color: rgba(22, 116, 79, 0.52);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: #fff;
 }
 
 .flow-step text:first-child {
-  background: rgba(216, 238, 227, 0.9);
+  background: var(--color-primary-light);
   border-radius: 7rpx;
-  color: #0f5e41;
+  color: var(--color-primary);
   flex: 0 0 40rpx;
   height: 40rpx;
   line-height: 40rpx;
 }
 
 .flow-step.active text:first-child {
-  background: #f5c14d;
-  color: #10251f;
+  background: var(--color-accent);
+  color: var(--color-text);
 }
 
 .flow-line {
-  background: rgba(31, 46, 38, 0.12);
+  background: var(--color-border);
 }
 
 .flow-line.active,
 .progress-fill,
 .trend-fill {
-  background: #16744f;
+  background: var(--color-primary);
 }
 
 .tab,
@@ -500,11 +598,10 @@
 }
 
 /* ============================================================
-   theme.wxss — 主题色（绿色 #16744f / 琥珀 #f0b429）
-   所有机型适配覆盖
+   theme.wxss �?主题色（绿色 #16744f / 琥珀 #f0b429�?   所有机型适配覆盖
    ============================================================ */
 
-/* ---------- 页面与顶部 ---------- */
+/* ---------- 页面与顶�?---------- */
 .page {
   background: #f6f7f8;
   color: #17201b;
@@ -617,7 +714,7 @@
   border-color: #e5e7eb;
 }
 
-/* ---------- 激活态按钮 ---------- */
+/* ---------- 激活态按�?---------- */
 .flow-step.active,
 .tab.active,
 .preset.active,
@@ -647,7 +744,7 @@
   box-shadow: none;
 }
 
-/* ---------- 中性按钮/输入 ---------- */
+/* ---------- 中性按�?输入 ---------- */
 .tab,
 .mini-controls button,
 .link-button,
@@ -678,7 +775,7 @@
   box-sizing: border-box;
 }
 
-/* ---------- 链接色/强调色 ---------- */
+/* ---------- 链接�?强调�?---------- */
 .copy,
 .link-inline,
 .load-more,
@@ -699,7 +796,7 @@
   color: #16744f;
 }
 
-/* ---------- 危险色 ---------- */
+/* ---------- 危险�?---------- */
 .roster-remove,
 .constraint-chip button,
 .activity-actions .danger,
@@ -716,7 +813,7 @@
   color: #8a5a00;
 }
 
-/* ---------- 统计网格卡 ---------- */
+/* ---------- 统计网格�?---------- */
 .summary-grid view,
 .quality-grid view,
 .review-grid view,
@@ -3430,3 +3527,571 @@
 @media (min-width: 450rpx) {
   .page { padding: 32rpx 40rpx 180rpx; }
 }
+
+/* ============================================================
+   深色模式 — CSS Variable 体系
+   data-theme="dark" 或 @media (prefers-color-scheme: dark)
+   ============================================================ */
+
+/* ---------- CSS Custom Properties ---------- */
+:root,
+page {
+  --color-bg: #f3f6f8;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8fafc;
+  --color-surface-3: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-light: #edf0f2;
+  --color-text: #17201b;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-primary: #16744f;
+  --color-primary-dark: #0f5e41;
+  --color-primary-light: #eef5f1;
+  --color-accent: #f0b429;
+  --color-accent-light: #fff8e1;
+  --color-danger: #be123c;
+  --color-danger-light: #fff1f2;
+  --color-avatar: #e2e8f0;
+  --color-avatar-text: #475569;
+  --color-hero-bg: #12342d;
+  --color-hero-text: #fff;
+  --bottom-nav-bg: rgba(255, 255, 255, 0.9);
+  --bottom-nav-border: #e5e7eb;
+}
+
+/* ---------- 跟随系统深色模式 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root,
+  page {
+    --color-bg: #0f0f10;
+    --color-surface: #1a1a1d;
+    --color-surface-2: #222225;
+    --color-surface-3: #2a2a2e;
+    --color-border: #333338;
+    --color-border-light: #2a2a2e;
+    --color-text: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-muted: #6b7280;
+    --color-primary: #2d9f78;
+    --color-primary-dark: #1a8a62;
+    --color-primary-light: #1a2f26;
+    --color-accent: #f5c14d;
+    --color-accent-light: #2a2418;
+    --color-danger: #f87171;
+    --color-danger-light: #2a181a;
+    --color-avatar: #333338;
+    --color-avatar-text: #9ca3af;
+    --color-hero-bg: #1a1a1d;
+    --color-hero-text: #e5e7eb;
+    --bottom-nav-bg: rgba(26, 26, 29, 0.92);
+    --bottom-nav-border: #333338;
+  }
+}
+
+/* ---------- 手动切换深色模式 ---------- */
+[data-theme="dark"] {
+  --color-bg: #0f0f10;
+  --color-surface: #1a1a1d;
+  --color-surface-2: #222225;
+  --color-surface-3: #2a2a2e;
+  --color-border: #333338;
+  --color-border-light: #2a2a2e;
+  --color-text: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-muted: #6b7280;
+  --color-primary: #2d9f78;
+  --color-primary-dark: #1a8a62;
+  --color-primary-light: #1a2f26;
+  --color-accent: #f5c14d;
+  --color-accent-light: #2a2418;
+  --color-danger: #f87171;
+  --color-danger-light: #2a181a;
+  --color-avatar: #333338;
+  --color-avatar-text: #9ca3af;
+  --color-hero-bg: #1a1a1d;
+  --color-hero-text: #e5e7eb;
+  --bottom-nav-bg: rgba(26, 26, 29, 0.92);
+  --bottom-nav-border: #333338;
+}
+
+/* ---------- 应用 CSS 变量覆盖原有样式 ---------- */
+[data-theme="dark"] .page,
+@media (prefers-color-scheme: dark) {
+  .page {
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+}
+
+[data-theme="dark"] .topbar,
+[data-theme="dark"] .section,
+[data-theme="dark"] .flow-card,
+[data-theme="dark"] .profile-card,
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .activity-card,
+[data-theme="dark"] .record-card,
+[data-theme="dark"] .roster-item,
+[data-theme="dark"] .progress-card,
+[data-theme="dark"] .game-card.done,
+[data-theme="dark"] .team,
+[data-theme="dark"] .score-side,
+[data-theme="dark"] .constraint-chip,
+[data-theme="dark"] .roster-tools,
+[data-theme="dark"] .signup-box,
+[data-theme="dark"] .name-box,
+[data-theme="dark"] .status-panel,
+[data-theme="dark"] .player-card,
+[data-theme="dark"] .game-card,
+[data-theme="dark"] .home-hero {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .home-hero { color: var(--color-hero-text); background: var(--color-hero-bg); }
+[data-theme="dark"] .home-title { color: var(--color-hero-text); }
+[data-theme="dark"] .home-subtitle { color: rgba(255, 255, 255, 0.7); }
+
+[data-theme="dark"] .title,
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .activity-title,
+[data-theme="dark"] .player-name,
+[data-theme="dark"] .profile-name,
+[data-theme="dark"] .status-title {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .subtitle,
+[data-theme="dark"] .section-subtitle,
+[data-theme="dark"] .activity-meta,
+[data-theme="dark"] .generated,
+[data-theme="dark"] .hint,
+[data-theme="dark"] .rest,
+[data-theme="dark"] .profile-subtitle,
+[data-theme="dark"] .signup-hint {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .pill,
+[data-theme="dark"] .signup-mode,
+[data-theme="dark"] .roster-status {
+  background: var(--color-primary-light);
+  border-color: rgba(45, 159, 120, 0.3);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-status.bench,
+[data-theme="dark"] .roster-status.late {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+[data-theme="dark"] .roster-status.absent {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .tab,
+[data-theme="dark"] .mini-controls button,
+[data-theme="dark"] .link-button,
+[data-theme="dark"] .copy,
+[data-theme="dark"] .round-line button,
+[data-theme="dark"] .ghost,
+[data-theme="dark"] .status-actions button,
+[data-theme="dark"] .activity-actions button,
+[data-theme="dark"] .quick-score button,
+[data-theme="dark"] .quick-row button,
+[data-theme="dark"] .setup-inline button,
+[data-theme="dark"] .preset,
+[data-theme="dark"] .segmented button,
+[data-theme="dark"] .recommend button {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .tab.active,
+[data-theme="dark"] .preset.active,
+[data-theme="dark"] .segmented button.active,
+[data-theme="dark"] .mini-controls button.active,
+[data-theme="dark"] .status-actions button.active,
+[data-theme="dark"] .status-actions .inline-primary,
+[data-theme="dark"] .primary,
+[data-theme="dark"] .finish-score,
+[data-theme="dark"] .empty-actions button,
+[data-theme="dark"] .score-row button {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+[data-theme="dark"] .flow-step.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+[data-theme="dark"] .flow-step.active text:first-child,
+[data-theme="dark"] .home-hero button,
+[data-theme="dark"] .bottom-nav .launch,
+[data-theme="dark"] .signup-mode.bench,
+[data-theme="dark"] .signup-submit.bench,
+[data-theme="dark"] .roster-status-actions button.bench {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #17201b;
+}
+
+[data-theme="dark"] .input-row input,
+[data-theme="dark"] .field input,
+[data-theme="dark"] .picker-box,
+[data-theme="dark"] .picker-input,
+[data-theme="dark"] .home-search,
+[data-theme="dark"] .score-row input,
+[data-theme="dark"] .score-side input,
+[data-theme="dark"] .roster-name,
+[data-theme="dark"] .roster-level,
+[data-theme="dark"] .roster-claim,
+[data-theme="dark"] .level-input input,
+[data-theme="dark"] .quick-row input,
+[data-theme="dark"] .setup-inline input,
+[data-theme="dark"] .roster-size-field {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .copy,
+[data-theme="dark"] .link-inline,
+[data-theme="dark"] .load-more,
+[data-theme="dark"] .activity-status,
+[data-theme="dark"] .quality-grid text:first-child,
+[data-theme="dark"] .round-line {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-claim,
+[data-theme="dark"] .load-more,
+[data-theme="dark"] .quick-score button,
+[data-theme="dark"] .roster-tools button.copy,
+[data-theme="dark"] .roster-link,
+[data-theme="dark"] .roster-link.bound {
+  background: var(--color-primary-light);
+  border-color: rgba(45, 159, 120, 0.3);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-remove,
+[data-theme="dark"] .constraint-chip button,
+[data-theme="dark"] .activity-actions .danger,
+[data-theme="dark"] .mini-controls button.warn,
+[data-theme="dark"] .status-actions button.warn {
+  background: var(--color-danger-light);
+  border-color: rgba(248, 113, 113, 0.3);
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .summary-grid view,
+[data-theme="dark"] .quality-grid view,
+[data-theme="dark"] .review-grid view,
+[data-theme="dark"] .stats-grid view,
+[data-theme="dark"] .stat {
+  background: var(--color-surface-2);
+  border-color: var(--color-border-light);
+}
+
+[data-theme="dark"] .summary-grid text:first-child {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .notice {
+  background: var(--color-accent-light);
+  border-color: rgba(245, 193, 77, 0.3);
+  color: var(--color-accent);
+}
+
+[data-theme="dark"] .notice button {
+  background: rgba(245, 193, 77, 0.15);
+  color: var(--color-accent);
+}
+
+[data-theme="dark"] .bottom-nav {
+  background: var(--bottom-nav-bg);
+  border-top-color: var(--bottom-nav-border);
+}
+
+[data-theme="dark"] .bottom-nav button.active {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .brand-mark {
+  background: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-avatar {
+  background: var(--color-avatar);
+  color: var(--color-avatar-text);
+}
+
+[data-theme="dark"] .roster-avatar.empty {
+  background: #1e1a12;
+  border-color: #a07820;
+  color: #a07820;
+}
+
+[data-theme="dark"] .roster-avatar.mine {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-tabs {
+  background: var(--color-surface);
+  border-bottom-color: var(--color-border);
+  border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .roster-tabs view {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .roster-tabs .active {
+  color: var(--color-accent);
+}
+
+[data-theme="dark"] .roster-slot {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .roster-item,
+[data-theme="dark"] .player-row {
+  border-bottom-color: var(--color-border-light);
+}
+
+[data-theme="dark"] .roster-item.open-slot {
+  background: var(--color-surface-2);
+}
+
+[data-theme="dark"] .roster-item.status-bench {
+  border-color: rgba(245, 193, 77, 0.25);
+}
+
+[data-theme="dark"] .flow-step {
+  background: var(--color-surface-3);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .flow-line {
+  background: var(--color-border);
+}
+
+[data-theme="dark"] .progress-track {
+  background: var(--color-surface-3);
+}
+
+[data-theme="dark"] .progress-fill,
+[data-theme="dark"] .trend-fill {
+  background: var(--color-primary);
+}
+
+[data-theme="dark"] .rank-table {
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .rank-row {
+  background: var(--color-surface);
+  border-top-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .rank-row.head {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .rank-no {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .segmented {
+  background: var(--color-surface-3);
+}
+
+[data-theme="dark"] .score-side button,
+[data-theme="dark"] .round-line button {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .score-side input {
+  background: var(--color-surface);
+}
+
+[data-theme="dark"] .team-label {
+  background: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-gender-symbol.male { color: #6aacf0; }
+[data-theme="dark"] .roster-gender-symbol.female { color: #f07aaa; }
+
+[data-theme="dark"] .source-pill {
+  background: var(--color-surface-3);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .roster-bind-state {
+  background: var(--color-surface-3);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .player-level-pill {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .player-level-pill.bound {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .drawer-input-row.readonly input {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .player-row-actions .slot-save {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+[data-theme="dark"] .roster-number {
+  background: var(--color-surface-3);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .roster-level-box text {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .roster-level {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .roster-tools.compact.roster-size-tools,
+[data-theme="dark"] .roster-tools {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .roster-size-tools .bench-add {
+  background: var(--color-primary-light);
+  border-color: rgba(45, 159, 120, 0.3);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .roster-list {
+  border-top-color: var(--color-border-light);
+}
+
+[data-theme="dark"] .remove {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .player-row-meta {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .roster-subline {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .player-inline-edit input {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .gender-mini button.male.active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+[data-theme="dark"] .gender-mini button.female.active {
+  background: #f472b6;
+  color: #fff;
+}
+
+[data-theme="dark"] .score-side button {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .versus {
+  background: var(--color-surface-3);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+/* ---------- 深色模式切换开�?---------- */
+.theme-toggle {
+  background: transparent;
+  border: 1rpx solid var(--color-border);
+  border-radius: 999rpx;
+  color: var(--color-text);
+  flex: 0 0 auto;
+  font-size: 26rpx;
+  height: 56rpx;
+  line-height: 54rpx;
+  margin: 0;
+  padding: 0 18rpx;
+}
+
+/* ---------- 新增元素深色覆盖 ---------- */
+[data-theme="dark"] .radar-bar-wrap {
+  background: var(--color-surface-3);
+}
+
+[data-theme="dark"] .radar-bar {
+  background: linear-gradient(180deg, var(--color-primary), var(--color-primary-dark));
+}
+
+[data-theme="dark"] .radar-label {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .radar-value {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .trend-label {
+  color: var(--color-text-secondary);
+}
+
+[data-theme="dark"] .trend-track {
+  background: var(--color-surface-3);
+}
+
+[data-theme="dark"] .trend-stat {
+  color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .weekly-summary {
+  background: var(--color-primary-light);
+  border-color: rgba(45, 159, 120, 0.3);
+}
+
+[data-theme="dark"] .weekly-label {
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .weekly-value {
+  color: var(--color-primary-dark);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-accent);
+}
+
+

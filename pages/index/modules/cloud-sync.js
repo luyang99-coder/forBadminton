@@ -2,7 +2,8 @@
  * cloud-sync.js — 云同步 & 数据存储
  * 职责：云函数调用、localStorage 读写、轮询、重试
  */
-const { HISTORY_KEY, CACHE_KEY_PREFIX, CLOUD_ENABLED } = require('./config')
+const { HISTORY_KEY, CLOUD_FUNCTION } = require('./config')
+const CACHE_KEY_PREFIX = 'activity_'
 
 // ---------- 云函数统一调用（含重试） ----------
 let cloudAvailable = false
@@ -11,9 +12,26 @@ try {
   cloudAvailable = true
 } catch (e) { cloudAvailable = false }
 
+// action → 子云函数名映射
+const SUB_FN_MAP = {
+  signup: 'signup',
+  cancelSignup: 'signup',
+  claimPlayer: 'signup',
+  bindPlayerOpenid: 'signup',
+  saveScore: 'score',
+  getActivityQr: 'roster',
+  addAdmin: 'roster',
+  removeAdmin: 'roster'
+}
+
 /**
  * 调用云函数，自动 loading + 重试
- * @param {string} name 函数名
+ *
+ * 对于路由到子云函数的 action，自动拼接子函数名。
+ * 通用 action（login / getActivity / listActivities / createActivity / updateActivity / deleteActivity）
+ * 仍使用主函数 `activityService`。
+ *
+ * @param {string} name 函数名或 action 名
  * @param {object} data 参数
  * @param {object} opts { showLoading, loadingText, retries, onError }
  */
@@ -31,8 +49,13 @@ function callCloud(name, data, opts = {}) {
 
   if (showLoading) wx.showLoading({ title: loadingText, mask: true })
 
+  // 判断是否需要路由到子云函数
+  const subFn = SUB_FN_MAP[name]
+  const functionName = subFn ? `${CLOUD_FUNCTION}/${subFn}` : CLOUD_FUNCTION
+  const callData = subFn ? { action: name, data } : data
+
   const doCall = (attempt) => {
-    return wx.cloud.callFunction({ name, data })
+    return wx.cloud.callFunction({ name: functionName, data: callData })
       .then(res => {
         if (showLoading) wx.hideLoading()
         return res.result
