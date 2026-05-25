@@ -812,7 +812,7 @@ Page({
     if (!this.data.schedule.length) {
       const result = this.buildSchedule([])
       if (!result) return
-      this.applyScheduleResult(result, '', {
+      this.applyScheduleResult(result, '排阵已生成', {
         activityStatus: 'running',
         activityStatusText: '进行中',
         registrationOpen: false,
@@ -1561,7 +1561,7 @@ Page({
           this.showError(`${message} 本地二维码内容为报名路径，可用于开发调试。`, 5000)
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => this.showError('')
+        fail: () => { wx.hideLoading(); this.showError('') }
       }, this)
     })
   },
@@ -1777,7 +1777,7 @@ Page({
     this.ensureRosterCapacity()
     const result = this.buildSchedule([])
     if (!result) return
-    this.applyScheduleResult(result, '', { activeTab: 'games' })
+    this.applyScheduleResult(result, '排阵已生成', { activeTab: 'games' })
   },
 
   regenerateRemaining(event) {
@@ -1820,10 +1820,10 @@ Page({
       this.afterRosterChange()
       if (firstOpen) {
         const result = this.buildSchedule(this.data.schedule.filter((game) => game.round < firstOpen.round || game.completed), Math.max(1, Number(this.data.gameCount) - firstOpen.order + 1))
-        if (result) this.applyScheduleResult(result, '')
+        if (result) this.applyScheduleResult(result, '排阵已生成')
       } else if (!this.data.schedule.length) {
         const result = this.buildSchedule([])
-        if (result) this.applyScheduleResult(result, '', { activeTab: 'games' })
+        if (result) this.applyScheduleResult(result, '排阵已生成', { activeTab: 'games' })
       } else {
         this.showError('')
       }
@@ -1904,7 +1904,7 @@ Page({
       this.saveHistory(result.games, result.stats, generatedAt)
       this.refreshGameBuckets()
       this.refreshMyGames()
-      if (message) wx.showToast({ title: message.length > 7 ? 'Done' : message, icon: 'success' })
+      if (message) wx.showToast({ title: message, icon: 'success' })
     })
   },
 
@@ -1997,7 +1997,7 @@ Page({
         result
       })
     })
-    this.applyScoreUpdate(schedule, '')
+    this.applyScoreUpdate(schedule, '快速计分完成')
   },
 
   saveResult(event) {
@@ -2032,7 +2032,7 @@ Page({
         result
       })
     })
-    this.applyScoreUpdate(schedule, '', id, targetScoreA, targetScoreB, targetResult)
+    this.applyScoreUpdate(schedule, '比分已保存', id, targetScoreA, targetScoreB, targetResult)
   },
 
   applyScoreUpdate(schedule, toastTitle, scoreGameId, scoreA, scoreB, result) {
@@ -2112,15 +2112,17 @@ Page({
       this.showError('')
       return
     }
-    wx.setClipboardData({ data: this.data.shareText, success: () => wx.showToast({ title: '', icon: 'success' }) })
+    wx.setClipboardData({ data: this.data.shareText, success: () => wx.showToast({ title: '分享文本已复制', icon: 'success' }) })
   },
 
   exportPoster() {
     if (!this.data.schedule.length) {
+      wx.hideLoading()
       this.showError('')
       return
     }
 
+    wx.showLoading({ title: '生成海报中' })
     const ratio = Math.max(2, Math.min(4, getPixelRatio()))
     const width = 375
     const padding = 18
@@ -2257,6 +2259,7 @@ Page({
     ctx.setTextAlign('left')
 
     ctx.draw(false, () => {
+      wx.hideLoading()
       wx.canvasToTempFilePath({
         canvasId: 'posterCanvas',
         width,
@@ -2264,18 +2267,21 @@ Page({
         destWidth: width * ratio,
         destHeight: height * ratio,
         success: (res) => {
+          wx.hideLoading()
           this.setData({ posterPath: res.tempFilePath })
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => this.showError('')
+        fail: () => { wx.hideLoading(); this.showError('') }
       }, this)
     })
   },
 
   /** 导出结果图（赛后复盘） */
   exportResultPoster() {
+    wx.showLoading({ title: '生成复盘中' })
     const snapshot = this.data.resultSnapshot || this.buildResultSnapshot(this.data.schedule, this.data.stats, this.data.review)
     if (!snapshot || !snapshot.totalGames) {
+      wx.hideLoading()
       this.showError('')
       return
     }
@@ -2361,6 +2367,7 @@ Page({
     ctx.setTextAlign('left')
 
     ctx.draw(false, () => {
+      wx.hideLoading()
       wx.canvasToTempFilePath({
         canvasId: 'posterCanvas',
         width,
@@ -2368,10 +2375,11 @@ Page({
         destWidth: width * ratio,
         destHeight: height * ratio,
         success: (res) => {
+          wx.hideLoading()
           this.setData({ posterPath: res.tempFilePath })
           wx.previewImage({ urls: [res.tempFilePath] })
         },
-        fail: () => this.showError('')
+        fail: () => { wx.hideLoading(); this.showError('') }
       }, this)
     })
   },
@@ -3451,7 +3459,7 @@ Page({
     if (!path) return
     wx.saveImageToPhotosAlbum({
       filePath: path,
-      success: () => wx.showToast({ title: title || '', icon: 'success' }),
+      success: () => wx.showToast({ title: title || '海报已保存到相册', icon: 'success' }),
       fail: () => {
         this.showError('')
       }
