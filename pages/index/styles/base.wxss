@@ -19,7 +19,7 @@
 .page {
   min-height: 100vh;
   padding: 24rpx 24rpx 150rpx;
-  background: #f3f6f8;
+  background: var(--color-bg);
 }
 
 /* ---------- 顶部栏 ---------- */
@@ -31,7 +31,7 @@
 /* ---------- 报名 Tab ---------- */
 .roster-tabs {
   align-items: center;
-  background: #fff;
+  background: var(--color-surface);
   border-bottom: 1rpx solid #edf0f2;
   border-top: 1rpx solid #edf0f2;
   display: grid;
@@ -43,7 +43,7 @@
 }
 
 .roster-tabs view {
-  color: #111827;
+  color: var(--color-text);
   font-size: 30rpx;
   font-weight: 500;
   height: 80rpx;
@@ -64,7 +64,7 @@
 
 /* ---------- 名单列表 ---------- */
 .roster-list {
-  background: #fff;
+  background: var(--color-surface);
   border-top: 1rpx solid #f1f5f9;
   gap: 0;
 }
@@ -164,7 +164,7 @@
 }
 
 .roster-slot {
-  color: #111827;
+  color: var(--color-text);
   flex: 0 0 auto;
   font-size: 32rpx;
   font-weight: 700;
@@ -177,7 +177,7 @@
 .roster-status {
   background: transparent;
   border: 0;
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 22rpx;
   height: auto;
   line-height: 1.2;
@@ -227,7 +227,7 @@
   white-space: nowrap;
   padding: 0;
 }
-.roster-bind-state.self { color: #111827; }
+.roster-bind-state.self { color: var(--color-text); }
 @media (max-width: 360rpx) {
   .roster-bind-state {
     justify-self: start;
@@ -247,7 +247,7 @@
 .roster-claim {
   background: transparent;
   border: 0;
-  color: #111827;
+  color: var(--color-text);
   font-size: 34rpx;
   font-weight: 500;
   height: 50rpx;
@@ -279,7 +279,7 @@
   flex: 0 0 auto;
 }
 .roster-level-box .roster-level {
-  color: #111827;
+  color: var(--color-text);
   font-size: 28rpx;
   height: 50rpx;
   line-height: 50rpx;
@@ -364,7 +364,7 @@
 
 .roster-size-field {
   align-items: center;
-  background: #fff;
+  background: var(--color-surface);
   border: 1rpx solid #dbe3ea;
   border-radius: 8rpx;
   box-sizing: border-box;
@@ -389,7 +389,7 @@
 .roster-size-field input {
   background: transparent;
   border: 0;
-  color: #111827;
+  color: var(--color-text);
   font-size: 28rpx;
   font-weight: 800;
   height: 60rpx;
@@ -415,7 +415,7 @@
 .drawer-input-row.readonly {
   grid-template-columns: minmax(0, 1fr);
 }
-.drawer-input-row.readonly input { color: #64748b; }
+.drawer-input-row.readonly input { color: var(--color-text-muted); }
 
 /* ---------- 玩家行操作 ---------- */
 .drawer-row .player-row-actions,
@@ -448,7 +448,7 @@
 
 /* ---------- 玩家列表（新） ---------- */
 .player-list {
-  background: #fff;
+  background: var(--color-surface);
   border-top: 1rpx solid #f0f0f0;
   gap: 0;
   margin-top: 8rpx;
@@ -491,7 +491,7 @@
 }
 
 .player-row.open-slot .roster-avatar {
-  background: #fff;
+  background: var(--color-surface);
   border: 3rpx dashed #e2a724;
   color: #e2a724;
 }
@@ -668,7 +668,7 @@
 
 /* ---------- 对局卡片 ---------- */
 .game-card {
-  background: #fff;
+  background: var(--color-surface);
   border: 1rpx solid #e5e7eb;
   border-radius: 10rpx;
   margin-bottom: 14rpx;
@@ -680,7 +680,7 @@
 }
 
 .game-card.done {
-  background: #fff;
+  background: var(--color-surface);
   border-color: #dbe3ea;
 }
 
@@ -703,7 +703,7 @@
   background: #f8fafc;
   border: 1rpx solid #dbe3ea;
   border-radius: 8rpx;
-  color: #334155;
+  color: var(--color-text-secondary);
   flex: none;
   height: 52rpx;
   line-height: 50rpx;
@@ -740,7 +740,7 @@
   background: #f8fafc;
   border: 1rpx solid #e2e8f0;
   border-radius: 8rpx;
-  color: #111827;
+  color: var(--color-text);
   display: flex;
   gap: 10rpx;
   line-height: 1.35;
@@ -793,7 +793,7 @@
 }
 
 .rest {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 23rpx;
   line-height: 1.45;
   overflow-wrap: anywhere;
@@ -853,7 +853,7 @@
 }
 
 .score-side input {
-  background: #fff;
+  background: var(--color-surface);
   border: 1rpx solid #dbe3ea;
   border-radius: 6rpx;
   box-sizing: border-box;
@@ -890,7 +890,7 @@
 }
 
 .radar-section .section-subtitle {
-  color: #64748b;
+  color: var(--color-text-muted);
   display: block;
   font-size: 22rpx;
   margin-bottom: 14rpx;
@@ -935,7 +935,7 @@
 }
 
 .radar-label {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 22rpx;
   max-width: 100%;
   overflow: hidden;
@@ -945,7 +945,7 @@
 }
 
 .radar-value {
-  color: #111827;
+  color: var(--color-text);
   font-size: 24rpx;
   font-weight: 700;
 }
@@ -998,7 +998,7 @@
 }
 
 .trend-stat {
-  color: #64748b;
+  color: var(--color-text-muted);
   font-size: 22rpx;
   overflow: hidden;
   text-overflow: ellipsis;
