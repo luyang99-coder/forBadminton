@@ -1,10 +1,8 @@
-/* ============================================================
-   theme.wxss — 主题样式（重构版，仅保留 CSS 变量方案）
-   使用 CSS 变量统一管理主题色（主色 #16744f / 琥珀 #f0b429）
-   支持跟随系统深色模式 & 手动切换
+﻿/* ============================================================
+   theme.wxss 鈥?涓婚鏍峰紡锛堥噸鏋勭増锛屼粎淇濈暀 CSS 鍙橀噺鏂规锛?   浣跨敤 CSS 鍙橀噺缁熶竴绠＄悊涓婚鑹诧紙涓昏壊 #16744f / 鐞ョ弨 #f0b429锛?   鏀寔璺熼殢绯荤粺娣辫壊妯″紡 & 鎵嬪姩鍒囨崲
    ============================================================ */
 
-/* ---------- CSS Custom Properties（必须放最前面）---------- */
+/* ---------- CSS Custom Properties锛堝繀椤绘斁鏈€鍓嶉潰锛?--------- */
 :root,
 page {
   --color-bg: #f3f6f8;
@@ -42,7 +40,7 @@ page {
   --color-status-bg: rgba(216, 238, 227, 0.84);
 }
 
-/* ---------- 跟随系统深色模式 ---------- */
+/* ---------- 璺熼殢绯荤粺娣辫壊妯″紡 ---------- */
 @media (prefers-color-scheme: dark) {
   :root,
   page {
@@ -82,7 +80,7 @@ page {
   }
 }
 
-/* ---------- 手动切换深色模式 ---------- */
+/* ---------- 鎵嬪姩鍒囨崲娣辫壊妯″紡 ---------- */
 [data-theme="dark"] {
   --color-bg: #0f0f10;
   --color-surface: #1a1a1d;
@@ -120,17 +118,17 @@ page {
 }
 
 /* ============================================================
-   以下是所有使用 CSS 变量的样式定义（仅此一套，无重复）
+   浠ヤ笅鏄墍鏈変娇鐢?CSS 鍙橀噺鐨勬牱寮忓畾涔夛紙浠呮涓€濂楋紝鏃犻噸澶嶏級
    ============================================================ */
 
-/* ---------- 页面基础 ---------- */
+/* ---------- 椤甸潰鍩虹 ---------- */
 .page {
   background: var(--color-bg);
   color: var(--color-text);
   padding: 24rpx 24rpx 230rpx;
 }
 
-/* ---------- 顶部栏 ---------- */
+/* ---------- 椤堕儴鏍?---------- */
 .topbar {
   align-items: center;
   background: var(--color-surface);
@@ -210,7 +208,7 @@ page {
   color: var(--color-text-muted);
 }
 
-/* ---------- Pill / 标签 ---------- */
+/* ---------- Pill / 鏍囩 ---------- */
 .pill,
 .signup-mode,
 .roster-status {
@@ -256,7 +254,7 @@ page {
   width: auto;
 }
 
-/* ---------- 首页Hero ---------- */
+/* ---------- 棣栭〉Hero ---------- */
 .home-hero {
   align-items: flex-start;
   background: var(--color-hero-bg);
@@ -318,7 +316,7 @@ page {
   box-shadow: none;
 }
 
-/* ---------- 卡片基础 ---------- */
+/* ---------- 鍗＄墖鍩虹 ---------- */
 .section,
 .flow-card,
 .profile-card,
@@ -365,7 +363,7 @@ page {
   margin-bottom: 0;
 }
 
-/* ---------- Flow 卡片 ---------- */
+/* ---------- Flow 鍗＄墖 ---------- */
 .flow-card {
   gap: 12rpx;
   grid-template-columns: minmax(0, 1fr) 30rpx minmax(0, 1fr) 30rpx minmax(0, 1fr);
@@ -425,7 +423,7 @@ page {
   background: var(--color-primary);
 }
 
-/* ---------- Tab按钮 ---------- */
+/* ---------- Tab鎸夐挳 ---------- */
 .tab,
 .mini-controls button,
 .link-button,
@@ -475,7 +473,7 @@ page {
   color: #fff;
 }
 
-/* 主要按钮 */
+/* 涓昏鎸夐挳 */
 .primary,
 .finish-score,
 .empty-actions button,
@@ -508,7 +506,7 @@ page {
   width: 100%;
 }
 
-/* ---------- 输入框 ---------- */
+/* ---------- 杈撳叆妗?---------- */
 .input-row input,
 .field input,
 .picker-box,
@@ -545,7 +543,7 @@ page {
   width: 100%;
 }
 
-/* ---------- 链接色 / 副本按钮 ---------- */
+/* ---------- 閾炬帴鑹?/ 鍓湰鎸夐挳 ---------- */
 .copy,
 .link-inline,
 .load-more,
@@ -565,7 +563,7 @@ page {
   text-align: left;
 }
 
-/* ---------- 认领/活动按钮 ---------- */
+/* ---------- 璁ら/娲诲姩鎸夐挳 ---------- */
 .roster-claim,
 .load-more,
 .quick-score button,
@@ -585,7 +583,7 @@ page {
   font-weight: 800;
 }
 
-/* ---------- 危险按钮 ---------- */
+/* ---------- 鍗遍櫓鎸夐挳 ---------- */
 .roster-remove,
 .constraint-chip button,
 .activity-actions .danger,
@@ -596,7 +594,7 @@ page {
   color: var(--color-warn-text);
 }
 
-/* ---------- 状态徽章 ---------- */
+/* ---------- 鐘舵€佸窘绔?---------- */
 .roster-status {
   background: var(--color-status-bg);
   color: var(--color-claim-text);
@@ -648,7 +646,7 @@ page {
   color: var(--color-text);
 }
 
-/* ---------- 统计网格 ---------- */
+/* ---------- 缁熻缃戞牸 ---------- */
 .summary-grid view,
 .quality-grid view,
 .review-grid view,
@@ -899,7 +897,7 @@ page {
   color: #fff;
 }
 
-/* ---------- 活动卡片 ---------- */
+/* ---------- 娲诲姩鍗＄墖 ---------- */
 .activity-card {
   box-shadow: 0 10rpx 28rpx rgba(32, 54, 42, 0.08);
 }
@@ -911,7 +909,7 @@ page {
   color: var(--color-text);
 }
 
-/* ---------- 团队/比赛 ---------- */
+/* ---------- 鍥㈤槦/姣旇禌 ---------- */
 .team-label,
 .avatar {
   background: linear-gradient(135deg, var(--color-primary), #1f9b6d);
@@ -930,7 +928,7 @@ page {
   width: 40rpx;
 }
 
-/* ---------- Tab顶部导航 ---------- */
+/* ---------- Tab椤堕儴瀵艰埅 ---------- */
 .tabs {
   margin-bottom: 18rpx;
   white-space: nowrap;
@@ -947,7 +945,7 @@ page {
   width: auto;
 }
 
-/* ---------- 分段控制器 ---------- */
+/* ---------- 鍒嗘鎺у埗鍣?---------- */
 .segmented {
   background: var(--color-surface-2);
   border-radius: 8rpx;
@@ -1099,7 +1097,7 @@ page {
   width: 100%;
 }
 
-/* ---------- 输入容器 ---------- */
+/* ---------- 杈撳叆瀹瑰櫒 ---------- */
 .input-row {
   align-items: center;
   display: grid;
@@ -1238,7 +1236,7 @@ page {
   line-height: 82rpx;
 }
 
-/* ---------- 约束 ---------- */
+/* ---------- 绾︽潫 ---------- */
 .constraint-list {
   margin-top: 18rpx;
 }
@@ -1268,7 +1266,7 @@ page {
   width: 88rpx;
 }
 
-/* ---------- 开关行 ---------- */
+/* ---------- 寮€鍏宠 ---------- */
 .switch-row {
   border-top: 1rpx solid var(--color-border);
   display: grid;
