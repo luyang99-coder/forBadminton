@@ -3490,7 +3490,7 @@ Page({
   formatTime(date) {
     const minutes = date.getMinutes()
     return `${date.getHours()}:${minutes < 10 ? '0' + minutes : minutes}`
-  }
+  },
 
   /** Canvas 导出共享主题色 */
   _canvasTheme() {
@@ -3507,7 +3507,7 @@ Page({
       accent: '#f0b429',
       danger: '#be123c'
     }
-  }
+  },
 
   /** 画圆角矩形 */
   _roundRect(ctx, x, y, w, h, r, color) {
@@ -3525,7 +3525,7 @@ Page({
     ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI)
     ctx.closePath()
     ctx.fill()
-  }
+  },
 
   /** Canvas 文字自动换行 */
   _wrapText(ctx, text, maxWidth) {
