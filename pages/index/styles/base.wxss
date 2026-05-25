@@ -1,14 +1,34 @@
+/* ============================================================
+   base.wxss — 基础布局 + 全部机型适配
+   断点：≤360px（小屏）/ 360-374px（标准窄）/ 375-414px（主流）/ ≥414px（大屏）
+   所有 grid / flex 均有 overflow 保护
+   ============================================================ */
+
+/* ---------- 小屏覆盖层通配 ---------- */
+@media (max-width: 360rpx) {
+  .page { padding: 16rpx 12rpx 140rpx; }
+}
+@media (min-width: 414rpx) {
+  .page { padding: 28rpx 32rpx 160rpx; }
+}
+@media (min-width: 450rpx) {
+  .page { padding: 32rpx 40rpx 180rpx; }
+}
+
+/* ---------- 页面根 ---------- */
 .page {
   min-height: 100vh;
   padding: 24rpx 24rpx 150rpx;
   background: #f3f6f8;
 }
 
+/* ---------- 顶部栏 ---------- */
+.topbar {
+  position: relative;
+  overflow: hidden;
+}
 
-
-
-
-/* Signup list reference-style overrides */
+/* ---------- 报名 Tab ---------- */
 .roster-tabs {
   align-items: center;
   background: #fff;
@@ -18,6 +38,9 @@
   grid-template-columns: repeat(3, 1fr);
   margin: 16rpx -22rpx 18rpx;
 }
+@media (max-width: 360rpx) {
+  .roster-tabs { margin: 12rpx -12rpx 14rpx; }
+}
 
 .roster-tabs view {
   color: #111827;
@@ -26,6 +49,12 @@
   height: 80rpx;
   line-height: 80rpx;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 360rpx) {
+  .roster-tabs view { font-size: 26rpx; height: 68rpx; line-height: 68rpx; }
 }
 
 .roster-tabs .active {
@@ -33,6 +62,7 @@
   font-weight: 800;
 }
 
+/* ---------- 名单列表 ---------- */
 .roster-list {
   background: #fff;
   border-top: 1rpx solid #f1f5f9;
@@ -52,7 +82,18 @@
   grid-template-columns: 84rpx minmax(0, 1fr);
   padding: 22rpx 0;
 }
+@media (max-width: 360rpx) {
+  .roster-item,
+  .roster-item.open-slot,
+  .roster-item.status-bench,
+  .roster-item.status-absent {
+    grid-template-columns: 72rpx minmax(0, 1fr);
+    gap: 14rpx;
+    padding: 18rpx 0;
+  }
+}
 
+/* ---------- 头像 ---------- */
 .roster-avatar {
   align-items: center;
   background: #e2e8f0;
@@ -67,18 +108,22 @@
   position: relative;
   width: 72rpx;
 }
+@media (max-width: 360rpx) {
+  .roster-avatar { height: 62rpx; width: 62rpx; margin-left: 6rpx; font-size: 26rpx; }
+}
+@media (min-width: 414rpx) {
+  .roster-avatar { height: 80rpx; width: 80rpx; font-size: 34rpx; }
+}
 
 .roster-avatar.empty {
   background: #fffaf0;
   border: 2rpx dashed #d9a62e;
   color: #d9a62e;
 }
-
 .roster-avatar.mine {
   background: #eef5f1;
   color: #2f6f58;
 }
-
 .mine-badge {
   background: #6aa7e8;
   border-radius: 50%;
@@ -93,18 +138,28 @@
   width: 32rpx;
 }
 
+/* ---------- 名单主体 ---------- */
 .roster-main {
   min-width: 0;
   padding-right: 10rpx;
 }
 
 .roster-headline {
-  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  display: flex;
+  gap: 10rpx;
+  justify-content: space-between;
   margin-bottom: 8rpx;
+}
+@media (max-width: 360rpx) {
+  .roster-headline { flex-wrap: wrap; gap: 6rpx; }
 }
 
 .roster-title-row {
   align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6rpx;
   min-width: 0;
 }
 
@@ -114,7 +169,11 @@
   font-size: 32rpx;
   font-weight: 700;
 }
+@media (max-width: 360rpx) {
+  .roster-slot { font-size: 28rpx; }
+}
 
+/* ---------- 状态标签 ---------- */
 .roster-status {
   background: transparent;
   border: 0;
@@ -123,21 +182,38 @@
   height: auto;
   line-height: 1.2;
   padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
+.roster-status.bench,
+.roster-status.late,
+.roster-status.absent {
+  display: inline-flex;
+  border-radius: 999rpx;
+  padding: 4rpx 10rpx;
+  font-size: 20rpx;
+  line-height: 1;
+  font-weight: 800;
+}
+.roster-status.bench { background: rgba(242, 180, 65, 0.18); color: #8a5a00; }
+.roster-status.late { background: rgba(242, 180, 65, 0.18); color: #8a5a00; }
+.roster-status.absent { background: rgba(217, 99, 79, 0.14); color: #9c3b2d; }
 
+/* ---------- 性别符号 ---------- */
 .roster-gender-symbol {
   font-size: 26rpx;
   font-weight: 800;
+  flex: 0 0 auto;
+}
+.roster-gender-symbol.male { color: #4f9ddf; }
+.roster-gender-symbol.female { color: #d94f8c; }
+@media (max-width: 360rpx) {
+  .roster-gender-symbol { font-size: 22rpx; }
 }
 
-.roster-gender-symbol.male {
-  color: #4f9ddf;
-}
-
-.roster-gender-symbol.female {
-  color: #d94f8c;
-}
-
+/* ---------- 绑定状态 ---------- */
 .roster-bind-state {
   background: transparent;
   border: 0;
@@ -146,16 +222,25 @@
   height: auto;
   line-height: 1.2;
   max-width: 160rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   padding: 0;
 }
-
-.roster-bind-state.self {
-  background: transparent;
-  color: #111827;
+.roster-bind-state.self { color: #111827; }
+@media (max-width: 360rpx) {
+  .roster-bind-state {
+    justify-self: start;
+    max-width: 120rpx;
+  }
 }
 
+/* ---------- 名单输入行 ---------- */
 .roster-top {
   grid-template-columns: minmax(0, 1fr) 112rpx;
+}
+@media (max-width: 360rpx) {
+  .roster-top { grid-template-columns: 1fr; gap: 6rpx; }
 }
 
 .roster-name,
@@ -168,31 +253,37 @@
   height: 50rpx;
   line-height: 50rpx;
   padding: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
-.roster-claim {
-  color: #d97706;
-  text-align: left;
+@media (max-width: 360rpx) {
+  .roster-name,
+  .roster-claim { font-size: 30rpx; }
 }
+.roster-claim { color: #d97706; text-align: left; }
 
 .roster-level-box {
   background: transparent;
   border: 0;
-  grid-template-columns: 48rpx minmax(0, 1fr);
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
   height: 50rpx;
   padding: 0;
 }
-
 .roster-level-box text {
   color: #9ca3af;
   font-size: 22rpx;
+  flex: 0 0 auto;
 }
-
 .roster-level-box .roster-level {
   color: #111827;
   font-size: 28rpx;
   height: 50rpx;
   line-height: 50rpx;
+  min-width: 0;
 }
 
 .roster-subline {
@@ -200,57 +291,51 @@
   font-size: 24rpx;
   line-height: 1.35;
   margin-top: 2rpx;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
+/* ---------- 性别按钮小控件 ---------- */
 .roster-gender {
-  grid-template-columns: repeat(2, 92rpx);
+  display: flex;
+  gap: 10rpx;
   margin-top: 12rpx;
+  flex-wrap: wrap;
 }
-
 .roster-gender .gender-choice {
   height: 48rpx;
   line-height: 46rpx;
+  flex: 0 0 92rpx;
+}
+@media (max-width: 360rpx) {
+  .roster-gender .gender-choice { flex: 1 1 72rpx; }
 }
 
+/* ---------- 名单操作按钮 ---------- */
 .roster-actions,
 .roster-actions.single {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
   margin-top: 12rpx;
 }
-
-.roster-actions.single {
-  grid-template-columns: 1fr;
-}
-
-.roster-actions button {
+.roster-actions > button,
+.roster-actions.single > button {
+  flex: 1 1 calc(50% - 5rpx);
+  min-width: 0;
   height: 52rpx;
   line-height: 50rpx;
 }
-
-@media (max-width: 360px) {
-  .roster-item,
-  .roster-item.open-slot,
-  .roster-item.status-bench,
-  .roster-item.status-absent {
-    grid-template-columns: 72rpx minmax(0, 1fr);
-  }
-
-  .roster-avatar {
-    height: 62rpx;
-    width: 62rpx;
-  }
-
-  .roster-headline,
-  .roster-top {
-    grid-template-columns: 1fr;
-  }
-
-  .roster-bind-state {
-    justify-self: start;
-  }
+.roster-actions.single > button {
+  flex: 1 1 100%;
 }
 
-/* Final roster controls and drawer action polish */
+/* ---------- 小屏覆盖层 1 ---------- */
+@media (max-width: 360rpx) {
+  .roster-actions button { flex-basis: 100%; }
+}
+
+/* ---------- 名单大小工具 ---------- */
 .roster-size-tools,
 .roster-tools.compact.roster-size-tools {
   align-items: stretch;
@@ -263,6 +348,18 @@
   grid-template-columns: minmax(0, 1fr) 136rpx;
   margin: 16rpx 0 12rpx;
   padding: 12rpx;
+}
+@media (max-width: 360rpx) {
+  .roster-size-tools,
+  .roster-tools.compact.roster-size-tools {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 414rpx) {
+  .roster-size-tools,
+  .roster-tools.compact.roster-size-tools {
+    grid-template-columns: minmax(0, 1fr) 160rpx;
+  }
 }
 
 .roster-size-field {
@@ -277,13 +374,18 @@
   height: 64rpx;
   padding: 0 14rpx;
 }
+@media (max-width: 360rpx) {
+  .roster-size-field { grid-template-columns: 124rpx minmax(0, 1fr); }
+}
 
 .roster-size-field text {
   color: #475569;
   font-size: 24rpx;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .roster-size-field input {
   background: transparent;
   border: 0;
@@ -309,14 +411,13 @@
   padding: 0;
 }
 
+/* ---------- 抽屉只读 ---------- */
 .drawer-input-row.readonly {
   grid-template-columns: minmax(0, 1fr);
 }
+.drawer-input-row.readonly input { color: #64748b; }
 
-.drawer-input-row.readonly input {
-  color: #64748b;
-}
-
+/* ---------- 玩家行操作 ---------- */
 .drawer-row .player-row-actions,
 .drawer-row .player-row-actions.single {
   display: flex;
@@ -324,24 +425,16 @@
   gap: 10rpx;
   margin-top: 4rpx;
 }
-
 .drawer-row .player-row-actions button {
   box-sizing: border-box;
   flex: 1 1 180rpx;
   min-width: 0;
 }
-
-@media (max-width: 360px) {
-  .roster-size-tools,
-  .roster-tools.compact.roster-size-tools {
-    grid-template-columns: 1fr;
-  }
-
-  .roster-size-field {
-    grid-template-columns: 124rpx minmax(0, 1fr);
-  }
+@media (max-width: 360rpx) {
+  .drawer-row .player-row-actions button { flex-basis: 100%; }
 }
 
+/* ---------- 紧凑名单工具 ---------- */
 .roster-tools.compact {
   align-items: center;
   display: grid;
@@ -349,7 +442,11 @@
   grid-template-columns: minmax(0, 1fr) 150rpx 190rpx;
   margin: 18rpx 0 10rpx;
 }
+@media (max-width: 360rpx) {
+  .roster-tools.compact { grid-template-columns: 1fr; }
+}
 
+/* ---------- 玩家列表（新） ---------- */
 .player-list {
   background: #fff;
   border-top: 1rpx solid #f0f0f0;
@@ -369,6 +466,16 @@
   grid-template-columns: 78rpx minmax(0, 1fr);
   padding: 24rpx 8rpx;
 }
+@media (max-width: 360rpx) {
+  .player-row,
+  .player-row.open-slot,
+  .player-row.status-bench,
+  .player-row.status-absent {
+    grid-template-columns: 68rpx minmax(0, 1fr);
+    gap: 16rpx;
+    padding: 20rpx 6rpx;
+  }
+}
 
 .player-row .roster-avatar {
   background: #eef2f6;
@@ -377,6 +484,10 @@
   font-size: 26rpx;
   height: 70rpx;
   width: 70rpx;
+  margin-left: 4rpx;
+}
+@media (max-width: 360rpx) {
+  .player-row .roster-avatar { height: 60rpx; width: 60rpx; font-size: 22rpx; }
 }
 
 .player-row.open-slot .roster-avatar {
@@ -385,15 +496,17 @@
   color: #e2a724;
 }
 
-.player-row-main {
-  min-width: 0;
-}
+.player-row-main { min-width: 0; }
 
 .player-row-head {
   align-items: center;
   display: flex;
-  gap: 10rpx;
+  flex-wrap: wrap;
+  gap: 8rpx;
   min-height: 48rpx;
+}
+@media (max-width: 360rpx) {
+  .player-row-head { gap: 6rpx; }
 }
 
 .player-name-line {
@@ -410,6 +523,9 @@
   font-weight: 500;
   flex: 0 0 auto;
 }
+@media (max-width: 360rpx) {
+  .player-row .roster-slot { font-size: 28rpx; }
+}
 
 .player-name {
   color: #30343b;
@@ -419,6 +535,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media (max-width: 360rpx) {
+  .player-name { font-size: 28rpx; }
 }
 
 .player-slot-input,
@@ -433,7 +552,6 @@
   min-width: 0;
   padding: 0;
 }
-
 .slot-save {
   background: #16744f;
   border-radius: 8rpx;
@@ -445,17 +563,23 @@
   margin: 0;
   padding: 0 16rpx;
 }
+@media (max-width: 360rpx) {
+  .slot-save { font-size: 20rpx; padding: 0 12rpx; }
+}
 
 .player-level-pill {
   color: #9ca3af;
   flex: 0 0 auto;
   font-size: 26rpx;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120rpx;
 }
-
-.player-level-pill.bound {
-  color: #30343b;
+@media (max-width: 360rpx) {
+  .player-level-pill { font-size: 22rpx; max-width: 96rpx; }
 }
+.player-level-pill.bound { color: #30343b; }
 
 .player-row-meta {
   align-items: center;
@@ -465,6 +589,11 @@
   font-size: 24rpx;
   gap: 8rpx;
   margin-top: 4rpx;
+  min-width: 0;
+  overflow: hidden;
+}
+@media (max-width: 360rpx) {
+  .player-row-meta { font-size: 21rpx; gap: 6rpx; }
 }
 
 .source-pill {
@@ -474,6 +603,10 @@
   font-size: 20rpx;
   line-height: 30rpx;
   padding: 0 8rpx;
+  flex: 0 0 auto;
+}
+@media (max-width: 360rpx) {
+  .source-pill { font-size: 18rpx; line-height: 26rpx; }
 }
 
 .player-inline-edit {
@@ -483,11 +616,15 @@
   grid-template-columns: minmax(0, 1fr) 88rpx 150rpx 96rpx;
   margin-top: 12rpx;
 }
+@media (max-width: 360rpx) {
+  .player-inline-edit {
+    grid-template-columns: 1fr;
+    gap: 8rpx;
+  }
+}
 
 .player-row .roster-gender,
-.player-row .roster-actions {
-  grid-column: auto;
-}
+.player-row .roster-actions { grid-column: auto; }
 
 .player-row .roster-gender .gender-choice,
 .player-row .roster-actions button,
@@ -497,54 +634,39 @@
 }
 
 .player-row-actions {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8rpx;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 12rpx;
 }
-
-.player-row-actions.single {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.player-row-actions button {
+  flex: 1 1 calc(33.33% - 6rpx);
+  min-width: 0;
+}
+.player-row-actions.single button {
+  flex: 1 1 calc(50% - 4rpx);
+}
+@media (max-width: 360rpx) {
+  .player-row-actions button { flex-basis: 100%; }
 }
 
 .player-filter {
   align-items: center;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8rpx;
 }
-
 .player-filter button {
   background: transparent;
   color: #16744f;
   font-size: 24rpx;
   margin: 0;
   padding: 0 8rpx;
+  flex: 0 0 auto;
 }
 
-@media (max-width: 360px) {
-  .roster-tools.compact,
-  .player-inline-edit {
-    grid-template-columns: 1fr;
-  }
-
-  .player-row,
-  .player-row.open-slot,
-  .player-row.status-bench,
-  .player-row.status-absent {
-    grid-template-columns: 68rpx minmax(0, 1fr);
-  }
-
-  .player-row .roster-avatar {
-    height: 60rpx;
-    width: 60rpx;
-  }
-}
-
-
-
-
-
-/* Match and scoring final responsive overrides */
+/* ---------- 对局卡片 ---------- */
 .game-card {
   background: #fff;
   border: 1rpx solid #e5e7eb;
@@ -552,6 +674,9 @@
   margin-bottom: 14rpx;
   overflow: hidden;
   padding: 16rpx;
+}
+@media (max-width: 360rpx) {
+  .game-card { padding: 12rpx; }
 }
 
 .game-card.done {
@@ -562,18 +687,18 @@
 .round-line {
   align-items: flex-start;
   color: #2f6f58;
-  display: grid;
+  display: flex;
   gap: 10rpx;
-  grid-template-columns: minmax(0, 1fr) auto;
+  justify-content: space-between;
   line-height: 1.35;
+  flex-wrap: wrap;
 }
-
 .round-line text {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-all;
+  flex: 1;
 }
-
 .round-line button {
   background: #f8fafc;
   border: 1rpx solid #dbe3ea;
@@ -586,13 +711,27 @@
   min-width: 132rpx;
   padding: 0 14rpx;
   width: auto;
+  font-size: 22rpx;
+}
+@media (max-width: 360rpx) {
+  .round-line { flex-direction: column; gap: 6rpx; }
+  .round-line button { width: 100%; min-width: 0; }
 }
 
+/* ---------- 双方队伍 ---------- */
 .teams {
   align-items: stretch;
   display: grid;
   gap: 10rpx;
   grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 430rpx) {
+  .teams {
+    grid-template-columns: minmax(0, 1fr) 54rpx minmax(0, 1fr);
+  }
+}
+@media (max-width: 360rpx) {
+  .teams { gap: 8rpx; }
 }
 
 .team,
@@ -602,41 +741,43 @@
   border: 1rpx solid #e2e8f0;
   border-radius: 8rpx;
   color: #111827;
-  display: grid;
+  display: flex;
   gap: 10rpx;
-  grid-template-columns: 42rpx minmax(0, 1fr);
-  justify-content: start;
   line-height: 1.35;
   min-height: 68rpx;
   padding: 12rpx;
   text-align: left;
+  flex-wrap: wrap;
 }
-
-.team.right text:first-child {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.team.right .team-label {
-  grid-column: 1;
-  grid-row: 1;
+@media (max-width: 360rpx) {
+  .team,
+  .team.right {
+    padding: 10rpx;
+    min-height: 60rpx;
+    gap: 6rpx;
+  }
 }
 
 .team text:not(.team-label) {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-all;
+  flex: 1;
 }
 
 .team-label {
   background: #2f6f58;
   border-radius: 6rpx;
   color: #fff;
-  flex: none;
+  flex: 0 0 auto;
   height: 38rpx;
   line-height: 38rpx;
   text-align: center;
   width: 38rpx;
+  font-size: 20rpx;
+}
+@media (max-width: 360rpx) {
+  .team-label { height: 32rpx; line-height: 32rpx; width: 32rpx; font-size: 18rpx; }
 }
 
 .versus {
@@ -658,13 +799,25 @@
   overflow-wrap: anywhere;
   word-break: break-all;
 }
+@media (max-width: 360rpx) {
+  .rest { font-size: 21rpx; }
+}
 
+/* ---------- 记分板 ---------- */
 .score-board {
   align-items: stretch;
   display: grid;
   gap: 10rpx;
   grid-template-columns: minmax(0, 1fr);
   margin-top: 14rpx;
+}
+@media (min-width: 430rpx) {
+  .score-board {
+    grid-template-columns: minmax(0, 1fr) 120rpx minmax(0, 1fr);
+  }
+}
+@media (max-width: 360rpx) {
+  .score-board { gap: 8rpx; }
 }
 
 .score-side {
@@ -675,6 +828,12 @@
   gap: 8rpx;
   grid-template-columns: 56rpx minmax(0, 1fr) 56rpx;
   padding: 8rpx;
+}
+@media (max-width: 360rpx) {
+  .score-side {
+    grid-template-columns: 48rpx minmax(0, 1fr) 48rpx;
+    padding: 6rpx;
+  }
 }
 
 .score-side button {
@@ -687,6 +846,10 @@
   margin: 0;
   padding: 0;
   width: 100%;
+  font-size: 26rpx;
+}
+@media (max-width: 360rpx) {
+  .score-side button { height: 44rpx; line-height: 42rpx; font-size: 22rpx; }
 }
 
 .score-side input {
@@ -699,6 +862,10 @@
   padding: 0;
   text-align: center;
   width: 100%;
+  font-size: 28rpx;
+}
+@media (max-width: 360rpx) {
+  .score-side input { height: 44rpx; font-size: 24rpx; }
 }
 
 .finish-score {
@@ -709,14 +876,8 @@
   line-height: 60rpx;
   margin: 0;
   width: 100%;
+  font-size: 26rpx;
 }
-
-@media (min-width: 430px) {
-  .teams {
-    grid-template-columns: minmax(0, 1fr) 54rpx minmax(0, 1fr);
-  }
-
-  .score-board {
-    grid-template-columns: minmax(0, 1fr) 120rpx minmax(0, 1fr);
-  }
+@media (max-width: 360rpx) {
+  .finish-score { height: 52rpx; line-height: 52rpx; font-size: 24rpx; }
 }

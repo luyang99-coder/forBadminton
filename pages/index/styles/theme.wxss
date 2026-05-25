@@ -499,7 +499,12 @@
   }
 }
 
-/* Calm production UI overrides */
+/* ============================================================
+   theme.wxss — 主题色（绿色 #16744f / 琥珀 #f0b429）
+   所有机型适配覆盖
+   ============================================================ */
+
+/* ---------- 页面与顶部 ---------- */
 .page {
   background: #f6f7f8;
   color: #17201b;
@@ -513,6 +518,9 @@
   margin-bottom: 16rpx;
   padding: 18rpx;
 }
+@media (max-width: 360rpx) {
+  .topbar { padding: 14rpx; margin-bottom: 12rpx; }
+}
 
 .brand-mark {
   background: #16744f;
@@ -523,9 +531,13 @@
   height: 64rpx;
   width: 64rpx;
 }
+@media (max-width: 360rpx) {
+  .brand-mark { flex-basis: 56rpx; height: 56rpx; width: 56rpx; font-size: 26rpx; }
+}
 
-.title {
-  font-size: 34rpx;
+.title { font-size: 34rpx; }
+@media (max-width: 360rpx) {
+  .title { font-size: 30rpx; }
 }
 
 .pill,
@@ -537,6 +549,7 @@
   box-shadow: none;
 }
 
+/* ---------- 首页hero ---------- */
 .home-hero {
   align-items: flex-start;
   background: #fff;
@@ -547,16 +560,19 @@
   min-height: 0;
   padding: 24rpx;
 }
-
-.home-hero::after,
-.home-hero-image {
-  display: none;
+@media (max-width: 360rpx) {
+  .home-hero { padding: 18rpx; }
 }
+.home-hero::after,
+.home-hero-image { display: none; }
 
 .home-title {
   color: #17201b;
   font-size: 36rpx;
   line-height: 1.2;
+}
+@media (max-width: 360rpx) {
+  .home-title { font-size: 32rpx; }
 }
 
 .home-subtitle {
@@ -564,6 +580,7 @@
   font-weight: 500;
 }
 
+/* ---------- 卡片基础 ---------- */
 .section,
 .flow-card,
 .profile-card,
@@ -584,6 +601,13 @@
   box-shadow: none;
 }
 
+.section {
+  padding: 22rpx;
+}
+@media (max-width: 360rpx) {
+  .section { padding: 16rpx; }
+}
+
 .flow-card {
   padding: 12rpx;
 }
@@ -593,6 +617,7 @@
   border-color: #e5e7eb;
 }
 
+/* ---------- 激活态按钮 ---------- */
 .flow-step.active,
 .tab.active,
 .preset.active,
@@ -622,6 +647,7 @@
   box-shadow: none;
 }
 
+/* ---------- 中性按钮/输入 ---------- */
 .tab,
 .mini-controls button,
 .link-button,
@@ -649,8 +675,10 @@
   border-radius: 8rpx;
   color: #17201b;
   box-shadow: none;
+  box-sizing: border-box;
 }
 
+/* ---------- 链接色/强调色 ---------- */
 .copy,
 .link-inline,
 .load-more,
@@ -671,12 +699,12 @@
   color: #16744f;
 }
 
+/* ---------- 危险色 ---------- */
 .roster-remove,
 .constraint-chip button,
 .activity-actions .danger,
 .mini-controls button.warn,
-.status-actions button.warn,
-.roster-status.absent {
+.status-actions button.warn {
   background: #fff1f2;
   border-color: #fecdd3;
   color: #be123c;
@@ -688,6 +716,7 @@
   color: #8a5a00;
 }
 
+/* ---------- 统计网格卡 ---------- */
 .summary-grid view,
 .quality-grid view,
 .review-grid view,
@@ -3304,4 +3333,100 @@
   line-height: 60rpx;
   padding: 0;
   text-align: center;
+}
+
+/* ============================================================
+   最终机型适配补丁
+   覆盖早期版本中不够灵活的布局
+   ============================================================ */
+
+/* ---------- 小屏 ---------- */
+@media (max-width: 360rpx) {
+  .home-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12rpx;
+    padding: 16rpx;
+  }
+  .home-hero button { width: 100%; }
+
+  .activity-card {
+    grid-template-columns: 1fr;
+    padding: 12rpx;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quality-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .switch-row {
+    grid-template-columns: 1fr;
+  }
+
+  .handicap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .picker-row {
+    grid-template-columns: 1fr;
+  }
+
+  .share-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .status-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rank-row {
+    grid-template-columns: 68rpx 1fr 88rpx 88rpx;
+    font-size: 20rpx;
+    padding: 0 8rpx;
+  }
+
+  .flow-card {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-line { display: none; }
+
+  .score-board {
+    grid-template-columns: 1fr;
+  }
+
+  .empty-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .round-line { flex-direction: column; gap: 6rpx; }
+  .round-line button { width: 100%; }
+}
+
+/* ---------- 大屏 ---------- */
+@media (min-width: 414rpx) {
+  .home-hero { padding: 32rpx; }
+  .activity-card {
+    grid-template-columns: minmax(0, 1fr) 100rpx 130rpx;
+  }
+  .review-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 450rpx) {
+  .page { padding: 32rpx 40rpx 180rpx; }
 }

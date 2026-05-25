@@ -2136,123 +2136,124 @@ Page({
     const title = this.data.activityTitle || '羽毛球活动'
     const subtitle = `${this.data.activityDate || '时间待定'} | ${this.data.activityVenue || '场地待定'}`
 
-    const clip = (text, max) => {
-      const value = String(text || '')
-      return value.length > max ? `${value.slice(0, max - 3)}...` : value
-    }
-
-    const roundRect = (ctx, x, y, w, h, r, color, stroke) => {
-      ctx.setFillStyle(color)
-      ctx.beginPath()
-      ctx.moveTo(x + r, y)
-      ctx.lineTo(x + w - r, y)
-      ctx.arc(x + w - r, y + r, r, 1.5 * Math.PI, 0)
-      ctx.lineTo(x + w, y + h - r)
-      ctx.arc(x + w - r, y + h - r, r, 0, 0.5 * Math.PI)
-      ctx.lineTo(x + r, y + h)
-      ctx.arc(x + r, y + h - r, r, 0.5 * Math.PI, Math.PI)
-      ctx.lineTo(x, y + r)
-      ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI)
-      ctx.closePath()
-      ctx.fill()
-      if (stroke) {
-        ctx.setStrokeStyle(stroke)
-        ctx.stroke()
-      }
-    }
-
+    const t = this._canvasTheme()
     const ctx = wx.createCanvasContext('posterCanvas', this)
-    ctx.setFillStyle('#f4f6fb')
+    this.ctx = ctx
+
+    // ---- 底色 ----
+    ctx.setFillStyle(t.bg)
     ctx.fillRect(0, 0, width, height)
 
-    roundRect(ctx, cardX, 12, cardW, 120, 12, '#ffffff', '#e2e8f0')
-    ctx.setFillStyle('#0f172a')
-    ctx.setFontSize(20)
-    ctx.fillText(clip(title, 18), padding + 2, 42)
-    ctx.setFillStyle('#64748b')
-    ctx.setFontSize(12)
-    ctx.fillText(clip(subtitle, 32), padding + 2, 64)
-    ctx.fillText(`导出 ${this.data.generatedAt || this.formatTime(new Date())}`, padding + 2, 84)
+    // ---- 头部 ----
+    this._roundRect(ctx, cardX, 12, cardW, 140, 12, t.cardBg)
+    ctx.setFillStyle(t.text)
+    ctx.setFontSize(16)
+    ctx.fillText(String(title).slice(0, 24), padding + 2, 36)
+    ctx.setFillStyle(t.textSecondary)
+    ctx.setFontSize(10)
+    ctx.fillText(String(subtitle).slice(0, 36), padding + 2, 54)
+    ctx.fillText(`导出 ${this.data.generatedAt || this.formatTime(new Date())}`, padding + 2, 70)
 
-    const summaryY = 96
+    // ---- 概览小标签（一行 4 个，字号缩小）----
+    const summaryY = 84
+    const gap4 = 8
+    const sw4 = (cardW - 12 - gap4 * 3) / 4
     const summary = [
       { n: this.data.schedule.length, t: '总局' },
       { n: completedCount, t: '完成' },
       { n: this.data.courtCount || 1, t: '场地' },
       { n: this.data.participants.length, t: '人数' }
     ]
-    summary.forEach((item, index) => {
-      const gap = 8
-      const sw = (cardW - 12 - gap * 3) / 4
-      const x = cardX + 6 + index * (sw + gap)
-      roundRect(ctx, x, summaryY, sw, 24, 7, '#f8fafc', '#e2e8f0')
+    summary.forEach((item, idx) => {
+      const x = cardX + 6 + idx * (sw4 + gap4)
+      this._roundRect(ctx, x, summaryY, sw4, 42, 7, t.tagBg)
       ctx.setTextAlign('center')
-      ctx.setFillStyle('#0f172a')
+      ctx.setFillStyle(t.textMuted)
+      ctx.setFontSize(9)
+      ctx.fillText(item.t, x + sw4 / 2, summaryY + 16)
+      ctx.setFillStyle(t.text)
       ctx.setFontSize(12)
-      ctx.fillText(`${item.t} ${item.n}`, x + sw / 2, summaryY + 16)
+      ctx.fillText(String(item.n), x + sw4 / 2, summaryY + 34)
     })
     ctx.setTextAlign('left')
 
-    let y = 148
-    ctx.setFillStyle('#0f172a')
-    ctx.setFontSize(15)
+    // ---- 轮转安排 ----
+    let y = 172
+    ctx.setFillStyle(t.text)
+    ctx.setFontSize(13)
     ctx.fillText('轮转安排', padding, y)
-    y += 14
+    y += 12
 
-    const teamAStart = cardX + 14
-    const teamAWidth = Math.floor((cardW - 78) / 2)
-    const teamBStart = teamAStart + teamAWidth + 50
-    const teamTextMax = Math.max(10, Math.floor(teamAWidth / 10))
+    const writeTeam = (x, leftW, text) => {
+      const lines = this._wrapText(ctx, text, leftW - 4)
+      lines.forEach((line, li) => {
+        ctx.fillText(line, x + 2, y + 22 + li * 14)
+      })
+      return lines.length
+    }
 
     this.data.schedule.forEach((game) => {
-      roundRect(ctx, cardX, y, cardW, gameCardH - 10, 10, '#ffffff', '#e2e8f0')
-      ctx.setFillStyle('#334155')
-      ctx.setFontSize(11)
-      ctx.fillText(`第${game.round}轮 | ${game.court}号场`, teamAStart, y + 18)
+      const gh = gameCardH - 4
+      this._roundRect(ctx, cardX, y, cardW, gh, 8, t.cardBg)
+
+      // 轮次 + 比分
+      ctx.setFillStyle(t.textSecondary)
+      ctx.setFontSize(10)
+      const roundText = `第${game.round}轮 | ${game.court}号场`
+      ctx.fillText(roundText, padding + 2, y + 14)
       if (game.result) {
         ctx.setTextAlign('right')
-        ctx.setFillStyle('#0f766e')
-        ctx.fillText(`${game.result.scoreA}:${game.result.scoreB}`, width - padding - 2, y + 18)
+        ctx.setFillStyle(t.greenDark)
+        ctx.setFontSize(11)
+        ctx.fillText(`${game.result.scoreA}:${game.result.scoreB}`, width - padding - 2, y + 14)
         ctx.setTextAlign('left')
       }
 
-      ctx.setFillStyle('#0f172a')
-      ctx.setFontSize(13)
-      ctx.fillText(clip(game.teamAText, teamTextMax), teamAStart, y + 46)
-      ctx.setTextAlign('center')
-      ctx.setFillStyle('#94a3b8')
-      ctx.fillText('VS', cardX + cardW / 2, y + 46)
-      ctx.setTextAlign('left')
-      ctx.setFillStyle('#0f172a')
-      ctx.fillText(clip(game.teamBText, teamTextMax), teamBStart, y + 46)
-
-      ctx.setFillStyle('#64748b')
+      // 队伍A vs 队伍B（使用自动换行）
+      const halfW = Math.floor((cardW - 48) / 2)
+      ctx.setFillStyle(t.text)
       ctx.setFontSize(11)
-      ctx.fillText(`休息：${clip(game.restText || '', 28)}`, teamAStart, y + 72)
-      y += gameCardH
+      const linesA = writeTeam(padding + 2, halfW, game.teamAText)
+      ctx.setTextAlign('center')
+      ctx.setFillStyle(t.textMuted)
+      ctx.setFontSize(11)
+      ctx.fillText('VS', cardX + cardW / 2, y + 24 + (linesA - 1) * 7)
+      ctx.setTextAlign('left')
+      ctx.setFillStyle(t.text)
+      const linesB = writeTeam(padding + 2 + halfW + 24, halfW, game.teamBText)
+
+      // 休息信息
+      const maxLines = Math.max(linesA, linesB, 1)
+      ctx.setFillStyle(t.textMuted)
+      ctx.setFontSize(9)
+      const restText = `休息：${String(game.restText || '').slice(0, 26)}`
+      ctx.fillText(restText, padding + 2, y + 20 + maxLines * 14 + 8)
+
+      y += gh + 4
     })
 
+    // ---- 排名/出场统计 ----
     y += 4
-    roundRect(ctx, cardX, y, cardW, 42 + statCount * statRowH, 10, '#ffffff', '#e2e8f0')
-    ctx.setFillStyle('#0f172a')
-    ctx.setFontSize(15)
-    ctx.fillText(this.data.rankingStats.length ? '实时排名' : '出场统计', padding, y + 24)
-    y += 48
+    const statCardH = 28 + statCount * 22 + 16
+    this._roundRect(ctx, cardX, y, cardW, statCardH, 8, t.cardBg)
+    ctx.setFillStyle(t.text)
+    ctx.setFontSize(13)
+    ctx.fillText(this.data.rankingStats.length ? '实时排名' : '出场统计', padding, y + 20)
 
-    posterStats.slice(0, statCount).forEach((item, index) => {
-      ctx.setFillStyle('#334155')
-      ctx.setFontSize(12)
+    posterStats.slice(0, statCount).forEach((item, idx) => {
+      ctx.setFillStyle(t.textSecondary)
+      ctx.setFontSize(10)
       const text = item.rank
         ? `${item.rank}. ${item.name}  ${item.wins || 0}胜${item.losses || 0}负  净胜${item.netPoints || 0}`
-        : `${index + 1}. ${item.name}  ${item.games}局  胜率${item.winRate || '-'}`
-      ctx.fillText(clip(text, 36), padding, y)
-      y += statRowH
+        : `${idx + 1}. ${item.name}  ${item.games}局  胜率${item.winRate || '-'}`
+      ctx.fillText(String(text).slice(0, 38), padding, y + 48 + idx * 22)
     })
 
-    ctx.setFillStyle('#94a3b8')
-    ctx.setFontSize(10)
+    // ---- 底部水印 ----
+    ctx.setFillStyle(t.textMuted)
+    ctx.setFontSize(9)
     ctx.setTextAlign('center')
-    ctx.fillText('', width / 2, height - 22)
+    ctx.fillText('羽毛球打转小程序', width / 2, height - 16)
     ctx.setTextAlign('left')
 
     ctx.draw(false, () => {
@@ -2271,6 +2272,7 @@ Page({
     })
   },
 
+  /** 导出结果图（赛后复盘） */
   exportResultPoster() {
     const snapshot = this.data.resultSnapshot || this.buildResultSnapshot(this.data.schedule, this.data.stats, this.data.review)
     if (!snapshot || !snapshot.totalGames) {
@@ -2280,28 +2282,10 @@ Page({
     const ratio = Math.max(2, Math.min(4, getPixelRatio()))
     const width = 375
     const padding = 18
+    const t = this._canvasTheme()
+
     const ranking = (snapshot.rankingStats || []).slice(0, 10)
     const review = snapshot.review || {}
-    const ctx = wx.createCanvasContext('posterCanvas', this)
-    const clip = (text, max) => {
-      const value = String(text || '')
-      return value.length > max ? `${value.slice(0, max - 1)}...` : value
-    }
-    const roundRect = (x, y, w, h, r, color) => {
-      ctx.setFillStyle(color)
-      ctx.beginPath()
-      ctx.moveTo(x + r, y)
-      ctx.lineTo(x + w - r, y)
-      ctx.arc(x + w - r, y + r, r, 1.5 * Math.PI, 0)
-      ctx.lineTo(x + w, y + h - r)
-      ctx.arc(x + w - r, y + h - r, r, 0, 0.5 * Math.PI)
-      ctx.lineTo(x + r, y + h)
-      ctx.arc(x + r, y + h - r, r, 0.5 * Math.PI, Math.PI)
-      ctx.lineTo(x, y + r)
-      ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI)
-      ctx.closePath()
-      ctx.fill()
-    }
 
     const cards = [
       { title: '最佳搭档', value: review.bestPartner || '-' },
@@ -2309,48 +2293,71 @@ Page({
       { title: '最均衡对局', value: review.mostBalancedGame || '-' },
       { title: '重复风险', value: review.repeatRisk || '-' }
     ]
-    const height = Math.max(760, 160 + cards.length * 84 + 44 + ranking.length * 30 + 70)
-    ctx.setFillStyle('#eef2ff')
+
+    // 估算高度
+    const estH = 150 + cards.length * 78 + 28 + 22 + ranking.length * 24 + 50
+    const height = Math.max(760, estH)
+
+    const ctx = wx.createCanvasContext('posterCanvas', this)
+    this.ctx = ctx
+    const cardX = padding
+    const cardW = width - padding * 2
+
+    // ---- 底色 ----
+    ctx.setFillStyle(t.bg)
     ctx.fillRect(0, 0, width, height)
-    roundRect(12, 12, width - 24, 132, 16, '#1d4ed8')
-    ctx.setFillStyle('#eff6ff')
-    ctx.setFontSize(22)
-    ctx.fillText(clip(`${snapshot.title || ''} 赛后复盘`, 18), padding, 50)
-    ctx.setFontSize(12)
-    ctx.setFillStyle('#bfdbfe')
-    ctx.fillText(clip(`${snapshot.date || '时间待定'} | ${snapshot.venue || '场地待定'}`, 34), padding, 76)
-    ctx.fillText(`完成 ${snapshot.completedGames}/${snapshot.totalGames} 局 | ${snapshot.playerCount} 人`, padding, 98)
-    ctx.fillText(`导出 ${snapshot.endedAt || this.formatTime(new Date())}`, padding, 118)
 
-    let y = 160
+    // ---- 头部（使用绿色卡片） ----
+    this._roundRect(ctx, cardX, 12, cardW, 118, 14, t.green)
+    ctx.setFillStyle('#ffffff')
+    ctx.setFontSize(18)
+    ctx.fillText(String(snapshot.title || '').slice(0, 18) + ' 赛后复盘', padding + 4, 44)
+    ctx.setFillStyle('#d1e8dc')
+    ctx.setFontSize(11)
+    const line1 = `${String(snapshot.date || '时间待定').slice(0, 24)} | ${String(snapshot.venue || '场地待定').slice(0, 14)}`
+    ctx.fillText(line1, padding + 4, 66)
+    ctx.fillText(`完成 ${snapshot.completedGames}/${snapshot.totalGames} 局 · ${snapshot.playerCount} 人`, padding + 4, 84)
+    ctx.fillText(`导出 ${snapshot.endedAt || this.formatTime(new Date())}`, padding + 4, 102)
+
+    // ---- 复盘卡片 ----
+    let y = 148
     cards.forEach((item) => {
-      roundRect(12, y, width - 24, 74, 12, '#ffffff')
-      ctx.setFillStyle('#1e293b')
+      this._roundRect(ctx, cardX, y, cardW, 72, 10, t.cardBg)
+      ctx.setFillStyle(t.textSecondary)
+      ctx.setFontSize(11)
+      ctx.fillText(item.title, padding + 4, y + 22)
+      ctx.setFillStyle(t.text)
       ctx.setFontSize(12)
-      ctx.fillText(item.title, padding, y + 24)
-      ctx.setFillStyle('#0f172a')
-      ctx.setFontSize(14)
-      ctx.fillText(clip(item.value, 28), padding, y + 50)
-      y += 84
+      const valLines = this._wrapText(ctx, item.value, cardW - 20)
+      valLines.forEach((line, li) => {
+        ctx.fillText(line, padding + 4, y + 44 + li * 16)
+      })
+      y += 78
     })
 
-    roundRect(12, y, width - 24, 44 + ranking.length * 30, 12, '#ffffff')
-    ctx.setFillStyle('#0f172a')
-    ctx.setFontSize(16)
-    ctx.fillText('积分排名', padding, y + 28)
-    y += 54
-    ranking.forEach((item, index) => {
-      const line = `${index + 1}. ${item.name}  ${item.wins || 0}胜${item.losses || 0}负  净胜${item.netPoints || 0}  胜率${item.winRate || '-'}`
-      ctx.setFillStyle(index < 3 ? '#1d4ed8' : '#334155')
-      ctx.setFontSize(12)
-      ctx.fillText(clip(line, 34), padding, y)
-      y += 30
+    // ---- 排名 ----
+    y += 4
+    const rankH = 30 + ranking.length * 22 + 12
+    this._roundRect(ctx, cardX, y, cardW, rankH, 10, t.cardBg)
+    ctx.setFillStyle(t.text)
+    ctx.setFontSize(14)
+    ctx.fillText('积分排名', padding + 4, y + 22)
+    ranking.forEach((item, idx) => {
+      const ry = y + 38 + idx * 22
+      ctx.setFillStyle(idx < 3 ? t.greenDark : t.textSecondary)
+      ctx.setFontSize(10)
+      // 简化为两段：排名+姓名 | 胜负+净胜
+      const namePart = `${idx + 1}. ${item.name}`
+      const statPart = `${item.wins || 0}胜${item.losses || 0}负  净胜${item.netPoints || 0}`
+      const line = `${namePart}  ${statPart}`
+      ctx.fillText(String(line).slice(0, 36), padding + 4, ry)
     })
 
-    ctx.setFillStyle('#64748b')
-    ctx.setFontSize(10)
+    // ---- 底部水印 ----
+    ctx.setFillStyle(t.textMuted)
+    ctx.setFontSize(9)
     ctx.setTextAlign('center')
-    ctx.fillText('羽毛球打转小程序 | 赛后结果导出', width / 2, height - 24)
+    ctx.fillText('羽毛球打转小程序 · 赛后结果', width / 2, height - 18)
     ctx.setTextAlign('left')
 
     ctx.draw(false, () => {
@@ -3483,5 +3490,65 @@ Page({
   formatTime(date) {
     const minutes = date.getMinutes()
     return `${date.getHours()}:${minutes < 10 ? '0' + minutes : minutes}`
+  }
+
+  /** Canvas 导出共享主题色 */
+  _canvasTheme() {
+    return {
+      bg: '#f2f6f4',
+      green: '#16744f',
+      greenDark: '#0f5e41',
+      greenLight: '#d1e8dc',
+      cardBg: '#ffffff',
+      tagBg: '#f4f8f6',
+      text: '#17201b',
+      textSecondary: '#4a5a52',
+      textMuted: '#8a9a92',
+      accent: '#f0b429',
+      danger: '#be123c'
+    }
+  }
+
+  /** 画圆角矩形 */
+  _roundRect(ctx, x, y, w, h, r, color) {
+    if (!ctx) { ctx = this.ctx }
+    ctx.setFillStyle(color)
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    ctx.lineTo(x + w - r, y)
+    ctx.arc(x + w - r, y + r, r, 1.5 * Math.PI, 0)
+    ctx.lineTo(x + w, y + h - r)
+    ctx.arc(x + w - r, y + h - r, r, 0, 0.5 * Math.PI)
+    ctx.lineTo(x + r, y + h)
+    ctx.arc(x + r, y + h - r, r, 0.5 * Math.PI, Math.PI)
+    ctx.lineTo(x, y + r)
+    ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  /** Canvas 文字自动换行 */
+  _wrapText(ctx, text, maxWidth) {
+    const str = String(text || '')
+    if (str.length <= 1) return [str]
+    // 不使用 measureText（小程序 canvas 可能不支持），按保守中文字符估算
+    // 每个中文字符约 13px（11px 字号），英文字符约 7px
+    const maxChars = Math.max(1, Math.floor(maxWidth / 7))
+    const lines = []
+    let current = ''
+    let currentW = 0
+    for (const ch of str) {
+      const cw = ch.charCodeAt(0) > 127 ? 13 : 7
+      if (currentW + cw > maxWidth * 0.95 && current.length > 0) {
+        lines.push(current)
+        current = ch
+        currentW = cw
+      } else {
+        current += ch
+        currentW += cw
+      }
+    }
+    if (current) lines.push(current)
+    return lines.length ? lines : [str]
   }
 })
