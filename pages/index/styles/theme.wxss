@@ -597,15 +597,7 @@ page {
   }
 }
 
-/* ============================================================
-   theme.wxss �?主题色（绿色 #16744f / 琥珀 #f0b429�?   所有机型适配覆盖
-   ============================================================ */
 
-/* ---------- 页面与顶�?---------- */
-.page {
-  background: #f6f7f8;
-  color: #17201b;
-}
 
 .topbar {
   background: #fff;
@@ -2611,15 +2603,7 @@ page {
   }
 }
 
-/* Final UI overrides: keep these after legacy rules. */
-.page {
-  background:
-    linear-gradient(135deg, rgba(22, 116, 79, 0.14), transparent 34%),
-    linear-gradient(315deg, rgba(242, 180, 65, 0.16), transparent 30%),
-    #eef3ef;
-  color: #1d2420;
-  padding-bottom: 230rpx;
-}
+
 
 .brand-row {
   align-items: center;
@@ -3616,7 +3600,11 @@ page {
 }
 
 /* ---------- 应用 CSS 变量覆盖原有样式 ---------- */
-[data-theme="dark"] .page,
+[data-theme="dark"] .page {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
 @media (prefers-color-scheme: dark) {
   .page {
     background: var(--color-bg);

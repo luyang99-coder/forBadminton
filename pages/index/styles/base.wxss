@@ -1031,3 +1031,105 @@
   color: #15803d;
   font-size: 24rpx;
 }
+
+/* ============================================================
+   meta-icon — 活动卡片图标
+   ============================================================ */
+.meta-icon {
+  font-size: 20rpx;
+  display: inline;
+}
+
+/* ============================================================
+   quick-finish — 一键胜出按钮
+   ============================================================ */
+.quick-finish-row {
+  display: flex;
+  gap: 8rpx;
+  justify-content: center;
+  padding: 8rpx 0;
+}
+
+.quick-finish-btn {
+  background: #eef5f1;
+  border: 1rpx solid #c4ddd0;
+  border-radius: 6rpx;
+  color: #16744f;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 10rpx 16rpx;
+}
+
+.quick-finish-btn:active {
+  background: #d0e9de;
+}
+
+/* ============================================================
+   theme-toggle — 深色模式切换按钮（浅色默认）
+   ============================================================ */
+.theme-toggle {
+  background: #f1f5f9;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 50%;
+  color: #f0b429;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  height: 56rpx;
+  width: 56rpx;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+/* ============================================================
+   meta-icon — 活动卡片图标
+   ============================================================ */
+.meta-icon {
+  font-size: 20rpx;
+  display: inline;
+}
+
+/* ============================================================
+   quick-finish — 一键胜出按钮
+   ============================================================ */
+.quick-finish-row {
+  display: flex;
+  gap: 8rpx;
+  justify-content: center;
+  padding: 8rpx 0;
+}
+
+.quick-finish-btn {
+  background: #eef5f1;
+  border: 1rpx solid #c4ddd0;
+  border-radius: 6rpx;
+  color: #16744f;
+  font-size: 22rpx;
+  line-height: 1;
+  padding: 10rpx 16rpx;
+}
+
+.quick-finish-btn:active {
+  background: #d0e9de;
+}
+
+/* ============================================================
+   theme-toggle — 深色模式切换按钮（浅色默认）
+   ============================================================ */
+.theme-toggle {
+  background: #f1f5f9;
+  border: 1rpx solid #e2e8f0;
+  border-radius: 50%;
+  color: #f0b429;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  height: 56rpx;
+  width: 56rpx;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
