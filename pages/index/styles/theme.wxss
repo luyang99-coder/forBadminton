@@ -1257,5 +1257,93 @@ page {
   gap: 8rpx;
 }
 
+/* ---------- 费用管理 ---------- */
+.fee-list { margin-bottom: 12rpx; }
+
+.fee-item {
+  align-items: center;
+  background: var(--color-surface);
+  border-radius: 12rpx;
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 10rpx;
+  padding: 16rpx 20rpx;
+}
+
+.fee-info {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 12rpx;
+}
+
+.fee-name-input {
+  background: var(--color-bg);
+  border-radius: 8rpx;
+  flex: 2;
+  font-size: 26rpx;
+  padding: 10rpx 14rpx;
+}
+
+.fee-amount-input {
+  background: var(--color-bg);
+  border-radius: 8rpx;
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 700;
+  padding: 10rpx 14rpx;
+  text-align: right;
+}
+
+.fee-currency { color: var(--color-text-secondary); font-size: 24rpx; }
+
+.fee-delete {
+  background: none;
+  color: var(--color-warn-text);
+  font-size: 28rpx;
+  padding: 4rpx 8rpx;
+}
+
+.fee-summary {
+  align-items: center;
+  background: linear-gradient(135deg, var(--color-primary), #1f9b6d);
+  border-radius: 14rpx;
+  color: #fff;
+  display: flex;
+  font-size: 26rpx;
+  font-weight: 600;
+  gap: 24rpx;
+  justify-content: center;
+  padding: 20rpx;
+}
+
+.fee-summary .fee-hint { font-size: 22rpx; opacity: .8; }
+
+/* 缴费状态标签 */
+.fee-payment-row {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 10rpx;
+}
+
+.fee-payment-row input {
+  background: var(--color-bg);
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  padding: 6rpx 10rpx;
+  width: 120rpx;
+}
+
+.fee-due { color: var(--color-text-secondary); font-size: 24rpx; white-space: nowrap; }
+
+.fee-status { font-size: 22rpx; padding: 4rpx 12rpx; border-radius: 20rpx; white-space: nowrap; }
+
+.fee-status.paid { background: rgba(22, 116, 79, .15); color: var(--color-primary); }
+
+.fee-status.partial { background: rgba(240, 180, 41, .15); color: #b8860b; }
+
+.fee-status.unpaid { background: rgba(200, 60, 60, .12); color: #c83c3c; }
+
 /* ---------- EOF ---------- */
 

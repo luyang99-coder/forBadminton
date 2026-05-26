@@ -248,6 +248,14 @@
               <text>{{item.updatedText || '未更新'}}</text>
               <text wx:if="{{item.sourceText}}">{{item.sourceText}}</text>
             </view>
+            <view class="drawer-field fee-payment-field" wx:if="{{fees.items.length && role === 'admin'}}">
+              <text>缴费</text>
+              <view class="fee-payment-row">
+                <text class="fee-due">应缴 {{fees.currency}}{{perPersonFee}}</text>
+                <input type="digit" value="{{fees.payments[item.id] || 0}}" data-id="{{item.id}}" bindinput="onFeePaymentInput" placeholder="实缴" />
+                <text class="fee-status {{fees.payments[item.id] >= perPersonFee ? 'paid' : fees.payments[item.id] > 0 ? 'partial' : 'unpaid'}}">{{fees.payments[item.id] >= perPersonFee ? '已缴' : fees.payments[item.id] > 0 ? '部分' : '未缴'}}</text>
+              </view>
+            </view>
             <view class="drawer-actions" wx:if="{{!item.isOpenSlot}}">
               <button wx:if="{{item.canBindWechat}}" class="roster-link {{item.openid ? 'bound' : ''}}" data-id="{{item.id}}" bindtap="bindPlayerOpenid">绑定微信</button>
               <button wx:if="{{schedule.length}}" class="copy" data-id="{{item.id}}" bindtap="viewPlayerSchedule">查看对局</button>
@@ -257,6 +265,32 @@
           </view>
         </view>
       </view>
+    </view>
+
+    <view class="section" wx:if="{{role === 'admin' && fees}}">
+      <view class="section-head">
+        <view>
+          <text class="section-title">💰 费用管理</text>
+          <text class="section-subtitle" wx:if="{{fees.items.length}}">{{fees.currency}}{{totalFeeAmount}} · 人均 {{fees.currency}}{{perPersonFee}} · AA均摊</text>
+        </view>
+        <button class="link-button" bindtap="addFeeItem">+ 添加</button>
+      </view>
+      <view class="fee-list" wx:if="{{fees.items.length}}">
+        <view class="fee-item" wx:for="{{fees.items}}" wx:key="id">
+          <view class="fee-info">
+            <input class="fee-name-input" value="{{item.name}}" data-id="{{item.id}}" bindinput="onFeeNameInput" placeholder="费用名称" />
+            <input class="fee-amount-input" type="digit" value="{{item.amount}}" data-id="{{item.id}}" bindinput="onFeeAmountInput" placeholder="金额" />
+            <text class="fee-currency">{{fees.currency}}</text>
+          </view>
+          <button class="fee-delete" data-id="{{item.id}}" bindtap="removeFeeItem">✕</button>
+        </view>
+      </view>
+      <view class="fee-summary" wx:if="{{fees.items.length}}">
+        <text>总计: {{fees.currency}}{{totalFeeAmount}}</text>
+        <text>人均: {{fees.currency}}{{perPersonFee}}</text>
+        <text class="fee-hint">AA均摊</text>
+      </view>
+      <view wx:else class="empty-state">暂无费用项，点击"+ 添加"开始。</view>
     </view>
 
     <view class="section" wx:if="{{role === 'admin'}}">

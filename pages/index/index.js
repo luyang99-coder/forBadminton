@@ -2861,6 +2861,7 @@ Page({
       adminPlayerLabel: playerOpenidOptions[adminPlayerIndex] ? playerOpenidOptions[adminPlayerIndex].name : '',
       claimPlayerLabel: claimPlayerOptions[claimPlayerIndex] ? claimPlayerOptions[claimPlayerIndex].name : ''
     })
+    this.calcFeeSummary()
   },
 
   refreshMyGames() {
@@ -3846,5 +3847,52 @@ Page({
     }
     if (current) lines.push(current)
     return lines.length ? lines : [str]
+  },
+
+  /* ===== 费用管理 ===== */
+  calcFeeSummary() {
+    const fees = this.data.fees || { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' }
+    const total = (fees.items || []).reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
+    const count = (this.data.participants || []).filter(p => !p.isOpenSlot).length || 1
+    const perPerson = total > 0 ? (total / count).toFixed(2) : '0.00'
+    this.setData({
+      'fees.totalAmount': total,
+      totalFeeAmount: total,
+      perPersonFee: perPerson
+    })
+  },
+
+  addFeeItem() {
+    const items = (this.data.fees.items || []).concat([{ id: nowId('fee'), name: '', amount: 0 }])
+    this.setData({ 'fees.items': items }, () => this.calcFeeSummary())
+    this.persistActivity()
+  },
+
+  removeFeeItem(e) {
+    const id = e.currentTarget.dataset.id
+    const items = (this.data.fees.items || []).filter(i => i.id !== id)
+    this.setData({ 'fees.items': items }, () => this.calcFeeSummary())
+    this.persistActivity()
+  },
+
+  onFeeNameInput(e) {
+    const id = e.currentTarget.dataset.id
+    const items = (this.data.fees.items || []).map(i => i.id === id ? { ...i, name: e.detail.value } : i)
+    this.setData({ 'fees.items': items }, () => this.calcFeeSummary())
+    this.persistActivity()
+  },
+
+  onFeeAmountInput(e) {
+    const id = e.currentTarget.dataset.id
+    const items = (this.data.fees.items || []).map(i => i.id === id ? { ...i, amount: Number(e.detail.value) || 0 } : i)
+    this.setData({ 'fees.items': items }, () => this.calcFeeSummary())
+    this.persistActivity()
+  },
+
+  onFeePaymentInput(e) {
+    const id = e.currentTarget.dataset.id
+    const amount = Number(e.detail.value) || 0
+    const payments = { ...(this.data.fees.payments || {}), [id]: amount }
+    this.setData({ 'fees.payments': payments }, () => this.persistActivity())
   }
 })
