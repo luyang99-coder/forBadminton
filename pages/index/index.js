@@ -177,6 +177,7 @@ Page({
     errorText: '',
     generatedAt: '',
     shareText: '',
+    fees: { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' },
     posterPath: '',
     darkMode: '',
     theme: 'light',
@@ -366,6 +367,7 @@ Page({
       posterPath: '',
       progressData: { doneNum: 0, totalNum: 0, progress: 0 },
       errorText: '',
+      fees: { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' },
       localOwnerKey: this.data.userKey,
       ownerOpenid: this.data.openid || '',
       adminOpenids: [],
@@ -438,6 +440,7 @@ Page({
       progressData: { doneNum: 0, totalNum: 0, progress: 0 },
       generatedAt: '',
       shareText: '',
+      fees: { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' },
       review: {
         bestPartner: '-',
         bestWinRate: '-',
@@ -683,7 +686,8 @@ Page({
       role,
       activityId,
       localOwnerKey: activity.localOwnerKey || '',
-      activeTab: activeTab
+      activeTab: activeTab,
+      fees: activity.fees || { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' }
     }), () => {
       this.refreshPlayerOptions()
       this.refreshRecommended()
@@ -726,6 +730,7 @@ Page({
       activityId: activity.activityId,
       localOwnerKey: activity.localOwnerKey || '',
       activeTab: activeTab,
+      fees: activity.fees || { items: [], payments: {}, splitMode: 'equal', totalAmount: 0, currency: '¥' },
       isOwner,
       isAdmin: canAdmin,
       cloudReady: true,
