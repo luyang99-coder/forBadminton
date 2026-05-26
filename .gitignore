@@ -26,3 +26,6 @@ Thumbs.db
 .cloudbase/
 .env
 .env.local
+private.key
+_*.js
+_*.key
