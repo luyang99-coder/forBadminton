@@ -986,9 +986,9 @@ page {
 .score-board {
   align-items: center;
   display: grid;
-  gap: 12rpx;
-  grid-template-columns: minmax(0, 1fr) 140rpx minmax(0, 1fr);
-  margin-top: 14rpx;
+  gap: 16rpx;
+  grid-template-columns: 1fr auto 1fr;
+  margin-top: 16rpx;
 }
 
 .score-side {
@@ -1031,13 +1031,16 @@ page {
 }
 
 .finish-score {
-  font-size: 24rpx;
+  font-size: 26rpx;
   font-weight: 700;
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0;
-  width: 100%;
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 32rpx;
   margin: 0;
+  border-radius: 28rpx;
+  background: var(--color-primary);
+  color: #fff;
+  white-space: nowrap;
 }
 
 .quick-score {
@@ -1110,6 +1113,12 @@ page {
 .rest {
   font-size: 24rpx;
   margin-top: 10rpx;
+}
+
+.rest-sm {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  margin-top: 6rpx;
 }
 
 .copy {
@@ -1395,6 +1404,167 @@ page {
 
 /* ---------- EOF ---------- */
 
+/* ---------- Mine Page ---------- */
+.mine-page {
+  padding-bottom: 40rpx;
+}
+
+.mine-hero {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 28rpx 24rpx;
+  margin: 12rpx 20rpx 16rpx;
+  background: linear-gradient(135deg, #16744F, #1a8a5a);
+  border-radius: 20rpx;
+  box-shadow: 0 6rpx 24rpx rgba(22, 116, 79, 0.25);
+}
+
+.mine-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mine-hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.mine-name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4rpx;
+}
+
+.mine-sub {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.75);
+}
+
+/* Summary grid items */
+.sg-item {
+  text-align: center;
+  padding: 20rpx 16rpx;
+}
+
+.sg-num {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 4rpx;
+}
+
+.sg-label {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+/* Trend cards */
+.trend-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.trend-card {
+  background: var(--color-surface);
+  border-radius: 14rpx;
+  padding: 18rpx 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.04);
+}
+
+.tc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.tc-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tc-rate {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.tc-track {
+  height: 8rpx;
+  background: var(--color-surface-3);
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.tc-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #16744F, #2d9f78);
+  border-radius: 4rpx;
+  transition: width 0.3s;
+}
+
+.tc-stat {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+/* Record cards */
+.rc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6rpx;
+}
+
+.rc-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rc-date {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.rc-meta {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  margin-bottom: 4rpx;
+}
+
+.rc-summary {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
 /* ============ Home V2 Styles ============ */
 .home-v2 { padding-bottom: 40rpx; }
 
@@ -1431,7 +1601,7 @@ page {
 .quick-actions {
   display: flex; gap: 16rpx; padding: 24rpx; margin: -20rpx 20rpx 16rpx;
   background: var(--card-bg, #fff); border-radius: 24rpx;
-  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06); justify-content: center;
+  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06); justify-content: flex-end;
 }
 .qa-btn {
   flex: 0 1 auto; display: flex; flex-direction: column; align-items: center; gap: 8rpx;
