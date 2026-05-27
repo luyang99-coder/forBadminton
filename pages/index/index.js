@@ -1654,35 +1654,46 @@ Page({
   generateLocalQrCode(message) {
     const path = `/pages/index/index?activityId=${this.data.activityId}&role=player`
     const matrix = makeQrMatrix(path)
-    const ctx = wx.createCanvasContext('posterCanvas', this)
     const size = 340
     const quiet = 24
     const moduleSize = Math.floor((size - quiet * 2) / matrix.length)
     const qrSize = moduleSize * matrix.length
     const start = Math.floor((size - qrSize) / 2)
 
-    ctx.setFillStyle('#ffffff')
-    ctx.fillRect(0, 0, size, size)
-    ctx.setFillStyle('#111827')
-    matrix.forEach((row, r) => {
-      row.forEach((dark, c) => {
-        if (dark) ctx.fillRect(start + c * moduleSize, start + r * moduleSize, moduleSize, moduleSize)
+    const query = wx.createSelectorQuery()
+    query.select('#posterCanvas').fields({ node: true, size: true }).exec((res) => {
+      if (!res || !res[0]) {
+        this.showError('Canvas 初始化失败')
+        return
+      }
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+      const dpr = wx.getSystemInfoSync().pixelRatio || 2
+      canvas.width = size * dpr
+      canvas.height = size * dpr
+      ctx.scale(dpr, dpr)
+
+      ctx.fillStyle = '#ffffff'
+      ctx.fillRect(0, 0, size, size)
+      ctx.fillStyle = '#111827'
+      matrix.forEach((row, r) => {
+        row.forEach((dark, c) => {
+          if (dark) ctx.fillRect(start + c * moduleSize, start + r * moduleSize, moduleSize, moduleSize)
+        })
       })
-    })
-    ctx.draw(false, () => {
       wx.canvasToTempFilePath({
-        canvasId: 'posterCanvas',
+        canvas: canvas,
         width: size,
         height: size,
         destWidth: size * 3,
         destHeight: size * 3,
-        success: (res) => {
-          this.setData({ qrLocalPath: res.tempFilePath, qrCodeFileID: '' })
+        success: (res2) => {
+          this.setData({ qrLocalPath: res2.tempFilePath, qrCodeFileID: '' })
           this.showError(`${message} 本地二维码内容为报名路径，可用于开发调试。`, 5000)
-          wx.previewImage({ urls: [res.tempFilePath] })
+          wx.previewImage({ urls: [res2.tempFilePath] })
         },
         fail: () => { wx.hideLoading(); this.showError('二维码生成失败') }
-      }, this)
+      })
     })
   },
 
@@ -2283,162 +2294,69 @@ Page({
 
   exportPoster() {
     if (!this.data.schedule.length) {
-      wx.hideLoading()
-      showError('加载失败，请重试')
+      showError('请先生成轮转排阵')
       return
     }
-
     wx.showLoading({ title: '生成海报中' })
     const ratio = Math.max(2, Math.min(4, getPixelRatio()))
     const width = 375
-    const padding = 18
-    const cardX = padding
-    const cardW = width - padding * 2
-    const gameCardH = 116
-    const statRowH = 28
-    const completedCount = this.data.schedule.filter((game) => game.completed || game.result).length
-    const posterStats = this.data.rankingStats.length ? this.data.rankingStats : this.data.stats
-    const statCount = Math.min(8, posterStats.length)
-    const bodyHeight = 196 + this.data.schedule.length * gameCardH + 18 + 46 + statCount * statRowH + 48
-    const height = Math.max(680, bodyHeight)
-    const title = this.data.activityTitle || '羽毛球活动'
-    const subtitle = `${this.data.activityDate || '时间待定'} | ${this.data.activityVenue || '场地待定'}`
-
-    const t = this._canvasTheme()
-    const ctx = wx.createCanvasContext('posterCanvas', this)
-    this.ctx = ctx
-
-    // ---- 底色 ----
-    ctx.setFillStyle(t.bg)
-    ctx.fillRect(0, 0, width, height)
-
-    // ---- 头部 ----
-    this._roundRect(ctx, cardX, 12, cardW, 160, 12, t.cardBg)
-    ctx.setFillStyle(t.text)
-    ctx.setFontSize(16)
-    ctx.fillText(String(title).slice(0, 24), padding + 2, 36)
-    ctx.setFillStyle(t.textSecondary)
-    ctx.setFontSize(10)
-    ctx.fillText(String(subtitle).slice(0, 36), padding + 2, 54)
-    ctx.fillText(`导出 ${this.data.generatedAt || this.formatTime(new Date())}`, padding + 2, 70)
-
-    // ---- 概览小标签（一行 4 个，字号缩小）----
-    const summaryY = 100
-    const gap4 = 8
-    const sw4 = (cardW - 12 - gap4 * 3) / 4
-    const summary = [
-      { n: this.data.schedule.length, t: '总局' },
-      { n: completedCount, t: '完成' },
-      { n: this.data.courtCount || 1, t: '场地' },
-      { n: this.data.participants.length, t: '人数' }
-    ]
-    summary.forEach((item, idx) => {
-      const x = cardX + 6 + idx * (sw4 + gap4)
-      this._roundRect(ctx, x, summaryY, sw4, 42, 7, t.tagBg)
-      ctx.setTextAlign('center')
-      ctx.setFillStyle(t.textMuted)
-      ctx.setFontSize(9)
-      ctx.fillText(item.t, x + sw4 / 2, summaryY + 16)
-      ctx.setFillStyle(t.text)
-      ctx.setFontSize(12)
-      ctx.fillText(String(item.n), x + sw4 / 2, summaryY + 34)
-    })
-    ctx.setTextAlign('left')
-
-    // ---- 轮转安排 ----
-    let y = 192
-    ctx.setFillStyle(t.text)
-    ctx.setFontSize(13)
-    ctx.fillText('轮转安排', padding, y)
-    y += 12
-
-    const writeTeam = (x, leftW, text) => {
-      const lines = this._wrapText(ctx, text, leftW - 4)
-      lines.forEach((line, li) => {
-        ctx.fillText(line, x + 2, y + 24 + li * 16)
-      })
-      return lines.length
-    }
-
-    this.data.schedule.forEach((game) => {
-      const gh = gameCardH - 4
-      this._roundRect(ctx, cardX, y, cardW, gh, 8, t.cardBg)
-
-      // 轮次 + 比分
-      ctx.setFillStyle(t.textSecondary)
-      ctx.setFontSize(10)
-      const roundText = `第${game.round}轮 | ${game.court}号场`
-      ctx.fillText(roundText, padding + 2, y + 14)
-      if (game.result) {
-        ctx.setTextAlign('right')
-        ctx.setFillStyle(t.greenDark)
-        ctx.setFontSize(11)
-        ctx.fillText(`${game.result.scoreA}:${game.result.scoreB}`, width - padding - 2, y + 14)
-        ctx.setTextAlign('left')
+    const query = wx.createSelectorQuery()
+    query.select('#posterCanvas').fields({ node: true, size: true }).exec((res) => {
+      if (!res || !res[0]) {
+        wx.hideLoading()
+        showError('Canvas 初始化失败')
+        return
       }
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+      const dpr = wx.getSystemInfoSync().pixelRatio || 2
+      const completedCount = this.data.schedule.filter(g => g.completed || g.result).length
+      const posterStats = this.data.rankingStats.length ? this.data.rankingStats : this.data.stats
+      const statCount = Math.min(8, posterStats.length)
+      const gameCardH = 76
+      const statRowH = 22
+      const bodyHeight = 196 + this.data.schedule.length * gameCardH + 30 + 46 + statCount * statRowH + 48
+      const height = Math.max(680, bodyHeight)
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      ctx.scale(dpr, dpr)
 
-      // 队伍A vs 队伍B（使用自动换行）
-      const halfW = Math.floor((cardW - 48) / 2)
-      ctx.setFillStyle(t.text)
-      ctx.setFontSize(11)
-      const linesA = writeTeam(padding + 2, halfW, game.teamAText)
-      ctx.setTextAlign('center')
-      ctx.setFillStyle(t.textMuted)
-      ctx.setFontSize(11)
-      ctx.fillText('VS', cardX + cardW / 2, y + 24 + (linesA - 1) * 7)
-      ctx.setTextAlign('left')
-      ctx.setFillStyle(t.text)
-      const linesB = writeTeam(padding + 2 + halfW + 24, halfW, game.teamBText)
-
-      // 休息信息
-      const maxLines = Math.max(linesA, linesB, 1)
-      ctx.setFillStyle(t.textMuted)
-      ctx.setFontSize(9)
-      const restText = `休息：${String(game.restText || '').slice(0, 26)}`
-      ctx.fillText(restText, padding + 2, y + 20 + maxLines * 14 + 8)
-
-      y += gh + 4
-    })
-
-    // ---- 排名/出场统计 ----
-    y += 4
-    const statCardH = 28 + statCount * 22 + 16
-    this._roundRect(ctx, cardX, y, cardW, statCardH, 8, t.cardBg)
-    ctx.setFillStyle(t.text)
-    ctx.setFontSize(13)
-    ctx.fillText(this.data.rankingStats.length ? '实时排名' : '出场统计', padding, y + 20)
-
-    posterStats.slice(0, statCount).forEach((item, idx) => {
-      ctx.setFillStyle(t.textSecondary)
-      ctx.setFontSize(10)
-      const text = item.rank
-        ? `${item.rank}. ${item.name}  ${item.wins || 0}胜${item.losses || 0}负  净胜${item.netPoints || 0}`
-        : `${idx + 1}. ${item.name}  ${item.games}局  胜率${item.winRate || '-'}`
-      ctx.fillText(String(text).slice(0, 38), padding, y + 48 + idx * 22)
-    })
-
-    // ---- 底部水印 ----
-    ctx.setFillStyle(t.textMuted)
-    ctx.setFontSize(9)
-    ctx.setTextAlign('center')
-    ctx.fillText('羽毛球打转小程序', width / 2, height - 16)
-    ctx.setTextAlign('left')
-
-    ctx.draw(false, () => {
-      wx.hideLoading()
-      wx.canvasToTempFilePath({
-        canvasId: 'posterCanvas',
-        width,
-        height,
-        destWidth: width * ratio,
-        destHeight: height * ratio,
-        success: (res) => {
-          wx.hideLoading()
-          this.setData({ posterPath: res.tempFilePath })
-          wx.previewImage({ urls: [res.tempFilePath] })
-        },
-        fail: () => { wx.hideLoading(); this.showError('海报生成失败') }
-      }, this)
+      const { drawSchedulePoster } = require('./modules/canvas-export')
+      drawSchedulePoster(ctx, {
+        title: this.data.activityTitle || '羽毛球活动',
+        subtitle: `${this.data.activityDate || ''} | ${this.data.activityVenue || ''}`,
+        generatedAt: this.data.generatedAt || this.formatTime(new Date()),
+        summary: [
+          { n: this.data.schedule.length, t: '总局' },
+          { n: completedCount, t: '完成' },
+          { n: this.data.courtCount || 1, t: '场地' },
+          { n: this.data.participants.length, t: '人数' }
+        ],
+        schedule: this.data.schedule.map(game => ({
+          round: game.round,
+          court: game.court,
+          teamAText: game.teamAText || '',
+          teamBText: game.teamBText || '',
+          restText: game.restText || '无',
+          result: game.result ? { scoreA: game.result.scoreA, scoreB: game.result.scoreB } : null
+        })),
+        posterStats: posterStats.slice(0, 8),
+        rankingStats: this.data.rankingStats
+      }, { width, padding: 18 }).then(() => {
+        wx.canvasToTempFilePath({
+          canvas: canvas,
+          width: width,
+          height: height,
+          destWidth: width * ratio,
+          destHeight: height * ratio,
+          success: (res2) => {
+            wx.hideLoading()
+            this.setData({ posterPath: res2.tempFilePath })
+            wx.previewImage({ urls: [res2.tempFilePath] })
+          },
+          fail: () => { wx.hideLoading(); showError('导出失败，请重试') }
+        })
+      }).catch(() => { wx.hideLoading(); showError('绘制失败') })
     })
   },
 
@@ -2448,105 +2366,43 @@ Page({
     const snapshot = this.data.resultSnapshot || this.buildResultSnapshot(this.data.schedule, this.data.stats, this.data.review)
     if (!snapshot || !snapshot.totalGames) {
       wx.hideLoading()
-      showError('加载失败，请重试')
+      showError('请先完成计分后查看')
       return
     }
     const ratio = Math.max(2, Math.min(4, getPixelRatio()))
     const width = 375
-    const padding = 18
-    const t = this._canvasTheme()
-
-    const ranking = (snapshot.rankingStats || []).slice(0, 10)
-    const review = snapshot.review || {}
-
-    const cards = [
-      { title: '最佳搭档', value: review.bestPartner || '-' },
-      { title: '最高胜率', value: review.bestWinRate || '-' },
-      { title: '最均衡对局', value: review.mostBalancedGame || '-' },
-      { title: '重复风险', value: review.repeatRisk || '-' }
-    ]
-
-    // 估算高度
-    const estH = 150 + cards.length * 78 + 28 + 22 + ranking.length * 24 + 50
-    const height = Math.max(760, estH)
-
-    const ctx = wx.createCanvasContext('posterCanvas', this)
-    this.ctx = ctx
-    const cardX = padding
-    const cardW = width - padding * 2
-
-    // ---- 底色 ----
-    ctx.setFillStyle(t.bg)
-    ctx.fillRect(0, 0, width, height)
-
-    // ---- 头部（使用绿色卡片） ----
-    this._roundRect(ctx, cardX, 12, cardW, 118, 14, t.green)
-    ctx.setFillStyle('#ffffff')
-    ctx.setFontSize(18)
-    ctx.fillText(String(snapshot.title || '').slice(0, 18) + ' 赛后复盘', padding + 4, 44)
-    ctx.setFillStyle('#d1e8dc')
-    ctx.setFontSize(11)
-    const line1 = `${String(snapshot.date || '时间待定').slice(0, 24)} | ${String(snapshot.venue || '场地待定').slice(0, 14)}`
-    ctx.fillText(line1, padding + 4, 66)
-    ctx.fillText(`完成 ${snapshot.completedGames}/${snapshot.totalGames} 局 · ${snapshot.playerCount} 人`, padding + 4, 84)
-    ctx.fillText(`导出 ${snapshot.endedAt || this.formatTime(new Date())}`, padding + 4, 102)
-
-    // ---- 复盘卡片 ----
-    let y = 148
-    cards.forEach((item) => {
-      this._roundRect(ctx, cardX, y, cardW, 72, 10, t.cardBg)
-      ctx.setFillStyle(t.textSecondary)
-      ctx.setFontSize(11)
-      ctx.fillText(item.title, padding + 4, y + 22)
-      ctx.setFillStyle(t.text)
-      ctx.setFontSize(12)
-      const valLines = this._wrapText(ctx, item.value, cardW - 20)
-      valLines.forEach((line, li) => {
-        ctx.fillText(line, padding + 4, y + 44 + li * 16)
-      })
-      y += 78
-    })
-
-    // ---- 排名 ----
-    y += 4
-    const rankH = 30 + ranking.length * 22 + 12
-    this._roundRect(ctx, cardX, y, cardW, rankH, 10, t.cardBg)
-    ctx.setFillStyle(t.text)
-    ctx.setFontSize(14)
-    ctx.fillText('积分排名', padding + 4, y + 22)
-    ranking.forEach((item, idx) => {
-      const ry = y + 38 + idx * 22
-      ctx.setFillStyle(idx < 3 ? t.greenDark : t.textSecondary)
-      ctx.setFontSize(10)
-      // 简化为两段：排名+姓名 | 胜负+净胜
-      const namePart = `${idx + 1}. ${item.name}`
-      const statPart = `${item.wins || 0}胜${item.losses || 0}负  净胜${item.netPoints || 0}`
-      const line = `${namePart}  ${statPart}`
-      ctx.fillText(String(line).slice(0, 36), padding + 4, ry)
-    })
-
-    // ---- 底部水印 ----
-    ctx.setFillStyle(t.textMuted)
-    ctx.setFontSize(9)
-    ctx.setTextAlign('center')
-    ctx.fillText('羽毛球打转小程序 · 赛后结果', width / 2, height - 18)
-    ctx.setTextAlign('left')
-
-    ctx.draw(false, () => {
-      wx.hideLoading()
-      wx.canvasToTempFilePath({
-        canvasId: 'posterCanvas',
-        width,
-        height,
-        destWidth: width * ratio,
-        destHeight: height * ratio,
-        success: (res) => {
-          wx.hideLoading()
-          this.setData({ posterPath: res.tempFilePath })
-          wx.previewImage({ urls: [res.tempFilePath] })
-        },
-        fail: () => { wx.hideLoading(); this.showError('海报生成失败') }
-      }, this)
+    const query = wx.createSelectorQuery()
+    query.select('#posterCanvas').fields({ node: true, size: true }).exec((res) => {
+      if (!res || !res[0]) {
+        wx.hideLoading()
+        showError('Canvas 初始化失败')
+        return
+      }
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+      const dpr = wx.getSystemInfoSync().pixelRatio || 2
+      const { drawResultPoster } = require('./modules/canvas-export')
+      const ranking = (snapshot.rankingStats || []).slice(0, 10)
+      const review = snapshot.review || {}
+      const estH = 150 + 4 * 78 + 28 + 22 + ranking.length * 24 + 50
+      const height = Math.max(760, estH)
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      ctx.scale(dpr, dpr)
+      drawResultPoster(ctx, snapshot, { width, padding: 18 }).then(() => {
+        wx.canvasToTempFilePath({
+          canvas: canvas,
+          width: width,
+          height: height,
+          destWidth: width * ratio,
+          destHeight: height * ratio,
+          success: (res2) => {
+            wx.hideLoading()
+            wx.previewImage({ urls: [res2.tempFilePath] })
+          },
+          fail: () => { wx.hideLoading(); showError('导出失败') }
+        })
+      }).catch(() => { wx.hideLoading(); showError('绘制失败') })
     })
   },
 
@@ -2558,49 +2414,65 @@ Page({
     }
     wx.showLoading({ title: '生成中' })
     this.getQrImagePath().then((qrPath) => {
-      const ctx = wx.createCanvasContext('posterCanvas', this)
       const width = 340
       const height = 520
-      ctx.setFillStyle('#f8fafc')
-      ctx.fillRect(0, 0, width, height)
-      ctx.setFillStyle('#0f766e')
-      ctx.fillRect(0, 0, width, 112)
-      ctx.setFillStyle('#ffffff')
-      ctx.setFontSize(23)
-      ctx.fillText(this.data.activityTitle || '', 22, 44)
-      ctx.setFontSize(13)
-      ctx.fillText('', 22, 74)
+      const query = wx.createSelectorQuery()
+      query.select('#posterCanvas').fields({ node: true, size: true }).exec((res) => {
+        if (!res || !res[0]) {
+          wx.hideLoading()
+          showError('Canvas 初始化失败')
+          return
+        }
+        const canvas = res[0].node
+        const ctx = canvas.getContext('2d')
+        const dpr = wx.getSystemInfoSync().pixelRatio || 2
+        canvas.width = width * dpr
+        canvas.height = height * dpr
+        ctx.scale(dpr, dpr)
 
-      ctx.setFillStyle('#ffffff')
-      ctx.fillRect(26, 136, 288, 310)
-      ctx.setFillStyle('#0f172a')
-      ctx.setFontSize(15)
-      ctx.fillText(`时间：${this.data.activityDate || '待定'}`, 46, 172)
-      ctx.fillText(`场地：${this.data.activityVenue || '待定'}`, 46, 202)
-      ctx.setFillStyle('#64748b')
-      ctx.setFontSize(12)
-      ctx.fillText(`活动ID：${this.data.activityId}`, 46, 230)
-      ctx.drawImage(qrPath, 90, 250, 160, 160)
-      ctx.setFillStyle('#334155')
-      ctx.setFontSize(12)
-      ctx.fillText('', 70, 474)
-      ctx.draw(false, () => {
-        wx.canvasToTempFilePath({
-          canvasId: 'posterCanvas',
-          width,
-          height,
-          destWidth: width * 3,
-          destHeight: height * 3,
-          success: (res) => {
-            wx.hideLoading()
-            this.setData({ qrPosterPath: res.tempFilePath })
-            wx.previewImage({ urls: [res.tempFilePath] })
-          },
-          fail: () => {
-            wx.hideLoading()
-            showError('加载失败，请重试')
-          }
-        }, this)
+        ctx.fillStyle = '#f8fafc'
+        ctx.fillRect(0, 0, width, height)
+        ctx.fillStyle = '#0f766e'
+        ctx.fillRect(0, 0, width, 112)
+        ctx.fillStyle = '#ffffff'
+        ctx.font = '23px sans-serif'
+        ctx.fillText(this.data.activityTitle || '', 22, 44)
+
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(26, 136, 288, 310)
+        ctx.fillStyle = '#0f172a'
+        ctx.font = '15px sans-serif'
+        ctx.fillText(`时间：${this.data.activityDate || '待定'}`, 46, 172)
+        ctx.fillText(`场地：${this.data.activityVenue || '待定'}`, 46, 202)
+        ctx.fillStyle = '#64748b'
+        ctx.font = '12px sans-serif'
+        ctx.fillText(`活动ID：${this.data.activityId}`, 46, 230)
+
+        const img = canvas.createImage()
+        img.src = qrPath
+        img.onload = () => {
+          ctx.drawImage(img, 90, 250, 160, 160)
+          wx.canvasToTempFilePath({
+            canvas: canvas,
+            width: width,
+            height: height,
+            destWidth: width * 3,
+            destHeight: height * 3,
+            success: (res2) => {
+              wx.hideLoading()
+              this.setData({ qrPosterPath: res2.tempFilePath })
+              wx.previewImage({ urls: [res2.tempFilePath] })
+            },
+            fail: () => {
+              wx.hideLoading()
+              showError('加载失败，请重试')
+            }
+          })
+        }
+        img.onerror = () => {
+          wx.hideLoading()
+          showError('加载失败，请重试')
+        }
       })
     }).catch(() => {
       wx.hideLoading()
@@ -3858,25 +3730,20 @@ Page({
     ctx.fill()
   },
 
-  /** Canvas 文字自动换行 */
+  /** Canvas 文字自动换行（使用 Canvas 2D measureText 精确测量） */
   _wrapText(ctx, text, maxWidth) {
     const str = String(text || '')
-    if (str.length <= 1) return [str]
-    // 不使用 measureText（小程序 canvas 可能不支持），按保守中文字符估算
-    // 每个中文字符约 13px（11px 字号），英文字符约 7px
-    const maxChars = Math.max(1, Math.floor(maxWidth / 7))
+    if (!str.length) return ['']
     const lines = []
     let current = ''
-    let currentW = 0
     for (const ch of str) {
-      const cw = ch.charCodeAt(0) > 127 ? 13 : 7
-      if (currentW + cw > maxWidth * 0.95 && current.length > 0) {
+      const testStr = current + ch
+      const metrics = ctx.measureText ? ctx.measureText(testStr) : { width: testStr.length * 7 }
+      if (metrics.width > maxWidth && current.length > 0) {
         lines.push(current)
         current = ch
-        currentW = cw
       } else {
         current += ch
-        currentW += cw
       }
     }
     if (current) lines.push(current)

@@ -162,7 +162,8 @@ function finishDraw(ctx, width, padding, cardX, cardW, data, resolve) {
     // 队伍A + VS + 队伍B
     const halfW = Math.floor((cardW - 48) / 2)
     const linesA = safeFillText(ctx, game.teamAText || '', padding + 2, y + 34, { fontSize: 11, color: t.text, maxWidth: halfW })
-    safeFillText(ctx, 'VS', cardX + cardW / 2, y + 34 + Math.max(0, linesA - 1) * 15, { fontSize: 11, color: t.textMuted, textAlign: 'center' })
+    const maxALines = linesA || 1
+    safeFillText(ctx, 'VS', cardX + cardW / 2, y + 34, { fontSize: 11, color: t.textMuted, textAlign: 'center' })
     const linesB = safeFillText(ctx, game.teamBText || '', padding + 2 + halfW + 24, y + 34, { fontSize: 11, color: t.text, maxWidth: halfW })
     
     // 休息信息
