@@ -22,7 +22,7 @@ const THEME = {
 
 // ---- 辅助方法 ----
 function roundRect(ctx, x, y, w, h, r, color) {
-  ctx.setFillStyle(color)
+  ctx.fillStyle = color
   ctx.beginPath()
   ctx.moveTo(x + r, y)
   ctx.lineTo(x + w - r, y)
@@ -51,7 +51,6 @@ function wrapText(ctx, text, maxWidth, fontSize) {
   
   // 确保设置了字体（canvas-export 默认字体设计基于 11px）
   const fs = fontSize || 11
-  ctx.setFontSize(fs)
   ctx.font = `normal ${fs}px sans-serif`
   
   const lines = []
@@ -80,10 +79,9 @@ function safeFillText(ctx, text, x, y, opts = {}) {
   const maxWidth = opts.maxWidth || Infinity
   const textAlign = opts.textAlign || 'left'
   
-  ctx.setFontSize(fontSize)
   ctx.font = `normal ${fontSize}px sans-serif`
-  ctx.setFillStyle(color)
-  ctx.setTextAlign(textAlign)
+  ctx.fillStyle = color
+  ctx.textAlign = textAlign
   
   if (maxWidth < Infinity) {
     const lines = wrapText(ctx, text, maxWidth, fontSize)
@@ -112,7 +110,7 @@ function drawSchedulePoster(ctx, data, { width = 375, padding = 18 } = {}) {
   const cardW = width - padding * 2
 
   // ---- 底色 ----
-  ctx.setFillStyle(THEME.bg)
+  ctx.fillStyle = THEME.bg
   ctx.fillRect(0, 0, width, 10000)
 
   return new Promise((resolve) => {
@@ -205,7 +203,7 @@ function drawResultPoster(ctx, snapshot, { width = 375, padding = 18 } = {}) {
   const cardX = padding
   const cardW = width - padding * 2
 
-  ctx.setFillStyle(t.bg)
+  ctx.fillStyle = t.bg
   ctx.fillRect(0, 0, width, 10000)
 
   return new Promise((resolve) => {

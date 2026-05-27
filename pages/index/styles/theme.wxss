@@ -1431,11 +1431,11 @@ page {
 .quick-actions {
   display: flex; gap: 16rpx; padding: 24rpx; margin: -20rpx 20rpx 16rpx;
   background: var(--card-bg, #fff); border-radius: 24rpx;
-  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06);
+  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06); justify-content: center;
 }
 .qa-btn {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8rpx;
-  padding: 20rpx 0; background: transparent; border: none; border-radius: 16rpx;
+  flex: 0 1 auto; display: flex; flex-direction: column; align-items: center; gap: 8rpx;
+  padding: 24rpx 64rpx; background: transparent; border: none; border-radius: 24rpx;
   font-size: 22rpx; line-height: 1;
 }
 .qa-btn::after { border: none; }
@@ -1516,5 +1516,15 @@ page {
 [data-theme="dark"] .afc-progress-bar { background: #333; }
 [data-theme="dark"] .qa-primary {
   background: linear-gradient(135deg, #1a8a62, #2d9f78);
+}
+
+/* Poster canvas — kept offscreen for Canvas 2D export */
+.poster-canvas {
+  position: fixed;
+  left: -9999rpx;
+  top: 0;
+  width: 375px;
+  height: 680px;
+  pointer-events: none;
 }
 

@@ -10,7 +10,6 @@
       </view>
     </view>
     <view class="topbar-right">
-      <button class="theme-toggle" bindtap="toggleDarkMode">{{theme === 'dark' ? '☀️' : '🌙'}}</button>
       <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
       <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
     </view>
@@ -60,18 +59,6 @@
       <button class="qa-btn qa-primary" bindtap="startNewActivity">
         <text class="qa-icon">➕</text>
         <text class="qa-label">发起活动</text>
-      </button>
-      <button class="qa-btn" bindtap="scanQrCode">
-        <text class="qa-icon">📷</text>
-        <text class="qa-label">扫码签到</text>
-      </button>
-      <button class="qa-btn" bindtap="openStats">
-        <text class="qa-icon">📊</text>
-        <text class="qa-label">数据看板</text>
-      </button>
-      <button class="qa-btn" bindtap="openHistory">
-        <text class="qa-icon">📋</text>
-        <text class="qa-label">活动历史</text>
       </button>
     </view>
 
