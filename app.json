@@ -31,6 +31,12 @@
       "packages": ["stats", "history"]
     }
   },
+  "requiredPrivateInfos": ["chooseAddress", "getLocation"],
+  "permission": {
+    "scope.subscribeMessage": {
+      "desc": "用于接收活动报名确认、轮转生成和比分更新的通知"
+    }
+  },
   "style": "v2",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents"
