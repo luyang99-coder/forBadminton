@@ -1,4 +1,23 @@
 <!-- stats/index.wxml -->
-<!-- 统计页 — 作为分包独立页面 -->
-<import src="../index/index.wxml" />
-<template is="page" data="{{ ...mainData }}" />
+<!-- 统计看板页 — 子包独立页面 -->
+<view class="stats-page">
+  <view wx:if="{{loading}}" class="loading-hint">
+    <text>加载中…</text>
+  </view>
+
+  <view wx:else>
+    <view class="stats-section" wx:if="{{trendData.length}}">
+      <text class="section-title">📈 胜率趋势</text>
+      <canvas type="2d" id="trendCanvas" class="stats-canvas" style="width:{{canvasWidth}}px;height:220px"></canvas>
+    </view>
+
+    <view class="stats-section" wx:if="{{partnerNodes.length}}">
+      <text class="section-title">🤝 搭档关系网络</text>
+      <canvas type="2d" id="partnerCanvas" class="stats-canvas" style="width:{{canvasWidth}}px;height:300px"></canvas>
+    </view>
+
+    <view class="empty-state" wx:if="{{!trendData.length && !partnerNodes.length}}">
+      <text>暂无历史数据。完成活动后，这里将展示趋势图和搭档网络。</text>
+    </view>
+  </view>
+</view>
