@@ -3894,5 +3894,31 @@ Page({
     const amount = Number(e.detail.value) || 0
     const payments = { ...(this.data.fees.payments || {}), [id]: amount }
     this.setData({ 'fees.payments': payments }, () => this.persistActivity())
+  },
+
+  scanQrCode() {
+    wx.scanCode({
+      success: (res) => {
+        if (res.result && res.result.includes('activityId=')) {
+          const match = res.result.match(/activityId=([^&\s]+)/)
+          if (match) {
+            this.loadActivity(match[1], 'player')
+          }
+        } else {
+          wx.showToast({ title: '无效的活动码', icon: 'none' })
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '扫码取消', icon: 'none' })
+      }
+    })
+  },
+
+  openStats() {
+    wx.navigateTo({ url: '/pages/stats/index' })
+  },
+
+  openHistory() {
+    wx.navigateTo({ url: '/pages/history/index' })
   }
 })
