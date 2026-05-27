@@ -38,6 +38,7 @@ const {
   buildStateFromGames
 } = require('./modules/schedule')
 const { getPixelRatio } = require('./modules/system')
+const { requestSubscribe, sendSubscribeMessage, NOTIFY_TMPL_IDS } = require('./modules/notify')
 Page({
   data: {
     mainTab: 'home',
@@ -1220,6 +1221,12 @@ Page({
       this.afterRosterChange()
       if (promotedBeforeSignup) this.rebuildRemainingForRosterChange('')
       wx.showToast({ title: isBenchSignup ? '已加入替补' : '报名成功', icon: 'success' })
+      // 首次报名后提示开启通知
+      const hasPrompted = wx.getStorageSync('notifyPrompted')
+      if (!hasPrompted) {
+        wx.setStorageSync('notifyPrompted', true)
+        this.promptSubscribe()
+      }
     })
   },
 
@@ -2019,6 +2026,27 @@ Page({
       this.refreshGameBuckets()
       this.refreshMyGames()
       if (message) wx.showToast({ title: message, icon: 'success' })
+      // 发送「轮转已生成」通知给所有参与者
+      const participants = this.data.participants || this.data.rosterParticipants || []
+      const tmplId = NOTIFY_TMPL_IDS.scheduleReady
+      if (tmplId) {
+        participants.forEach(p => {
+          if (p.openid) {
+            sendSubscribeMessage(
+              'cloud1-d3gt5f02n0ddacfb3',
+              p.openid,
+              tmplId,
+              {
+                thing1: { value: this.data.activityTitle || '羽毛球活动' },
+                thing2: { value: (this.data.courtCount || 1) + '片场 · ' + (this.data.schedule ? this.data.schedule.length : 0) + '局' },
+                time3: { value: this.data.generatedAt || new Date().toLocaleString() },
+                thing4: { value: '点击查看你的轮转排阵' }
+              },
+              'pages/index/index?activityId=' + this.data.activityId
+            )
+          }
+        })
+      }
     })
   },
 
@@ -3675,6 +3703,12 @@ Page({
       this.setData({ singleName: '', syncing: false, errorText: '' })
       this.refreshCloudActivity(true)
       this.refreshHomeData()
+      // 首次报名后提示开启通知
+      const hasPrompted = wx.getStorageSync('notifyPrompted')
+      if (!hasPrompted) {
+        wx.setStorageSync('notifyPrompted', true)
+        this.promptSubscribe()
+      }
     }).catch(() => {
       this.setData({ syncing: false })
       showError('加载失败，请重试')
@@ -3920,5 +3954,25 @@ Page({
 
   openHistory() {
     wx.navigateTo({ url: '/pages/history/index' })
-  }
+  },
+
+  promptSubscribe() {
+    wx.showModal({
+      title: '开启通知',
+      content: '开启消息通知后，你将在活动报名确认、轮转生成和比分更新时收到微信提醒。',
+      confirmText: '去开启',
+      cancelText: '暂不',
+      success: (res) => {
+        if (res.confirm) {
+          requestSubscribe((err, result) => {
+            if (err) {
+              console.log('subscribe rejected', err)
+            } else {
+              wx.showToast({ title: '已开启', icon: 'success' })
+            }
+          })
+        }
+      }
+    })
+  },
 })
