@@ -1133,3 +1133,10 @@
   margin: 0;
   line-height: 1;
 }
+
+/* ============================================================
+   Section spacing — unified vertical rhythm
+   ============================================================ */
+.section {
+  margin-bottom: 28rpx;
+}
