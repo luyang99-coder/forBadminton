@@ -2028,7 +2028,7 @@ Page({
       if (message) wx.showToast({ title: message, icon: 'success' })
       // 发送「轮转已生成」通知给所有参与者
       const participants = this.data.participants || this.data.rosterParticipants || []
-      const tmplId = NOTIFY_TMPL_IDS.scheduleReady
+      const tmplId = NOTIFY_TMPL_IDS.activityReminder
       if (tmplId) {
         participants.forEach(p => {
           if (p.openid) {

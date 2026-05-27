@@ -4,7 +4,7 @@ const NOTIFY_TMPL_IDS = {
   activityConfirm: '',
   scheduleReady: '',
   scoreUpdate: '',
-  activityReminder: ''
+  activityReminder: 's6QRccbEYZZfAmlaK8XOtzpi07W2EnhmF8DuyPkhmNA'
 }
 
 function getNotifySettings(activity) {
