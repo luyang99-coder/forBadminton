@@ -34,37 +34,20 @@
 
   <view wx:if="{{mainTab === 'home'}}" class="home-v2">
     <view class="hero-banner">
-      <view class="hero-bg"></view>
-      <view class="hero-content">
-        <text class="hero-title">🏸 羽毛球打转</text>
-        <text class="hero-subtitle">智能轮转 · 数据复盘 · 球友社区</text>
-      </view>
+      <text class="hero-title">羽毛球打转</text>
+      <text class="hero-subtitle">智能轮转 · 数据复盘</text>
       <view class="hero-stats">
-        <view class="hero-stat-item">
-          <text class="hero-stat-num">{{recentActivities.length}}</text>
-          <text class="hero-stat-label">场活动</text>
-        </view>
-        <view class="hero-stat-item">
-          <text class="hero-stat-num">{{profileStats.matches}}</text>
-          <text class="hero-stat-label">次出战</text>
-        </view>
-        <view class="hero-stat-item">
-          <text class="hero-stat-num">{{profileStats.winRate}}</text>
-          <text class="hero-stat-label">胜率</text>
-        </view>
+        <text class="hero-stat">{{recentActivities.length}} 场活动 · {{profileStats.matches}} 次出战 · 胜率 {{profileStats.winRate}}</text>
       </view>
     </view>
 
     <view class="quick-actions">
-      <button class="qa-btn qa-primary" bindtap="startNewActivity">
-        <text class="qa-icon">➕</text>
-        <text class="qa-label">发起活动</text>
-      </button>
+      <button class="qa-btn qa-primary" bindtap="startNewActivity">+ 发起活动</button>
     </view>
 
     <view class="section" wx:if="{{activeActivities.length}}">
       <view class="section-header">
-        <text class="section-title">🔥 进行中</text>
+        <text class="section-title">进行中</text>
         <text class="section-count">{{activeActivities.length}} 场</text>
       </view>
       <scroll-view class="active-cards-h" scroll-x>
@@ -75,13 +58,13 @@
           </view>
           <view class="afc-body">
             <view class="afc-info-row">
-              <text>📅 {{item.date}}</text>
-              <text>📍 {{item.venue}}</text>
+              <text>{{item.date}}</text>
+              <text>{{item.venue}}</text>
             </view>
             <view class="afc-info-row">
-              <text>👥 {{item.playerCount}} 人</text>
-              <text>🏸 {{item.courtCount}} 片场</text>
-              <text>🎯 {{item.gameCount}} 局</text>
+              <text>{{item.playerCount}}人</text>
+              <text>{{item.courtCount}}场</text>
+              <text>{{item.gameCount}}局</text>
             </view>
             <view class="afc-progress">
               <text class="afc-progress-text">{{item.completed || 0}}/{{item.gameCount}} 计分</text>
@@ -100,9 +83,9 @@
 
     <view class="section">
       <view class="section-header">
-        <text class="section-title">📦 已结束</text>
+        <text class="section-title">已结束</text>
         <view class="home-search-wrap">
-          <input class="home-search-inline" value="{{homeKeyword}}" bindinput="onHomeKeywordInput" placeholder="🔍 搜索" />
+          <input class="home-search-inline" value="{{homeKeyword}}" bindinput="onHomeKeywordInput" placeholder="搜索" />
         </view>
       </view>
       <scroll-view wx:if="{{endedActivities.length}}" class="activity-list" scroll-y>
@@ -254,7 +237,7 @@
     <view class="section" wx:if="{{role === 'admin' && fees}}">
       <view class="section-head">
         <view>
-          <text class="section-title">💰 费用管理</text>
+          <text class="section-title">费用管理</text>
           <text class="section-subtitle" wx:if="{{fees.items.length}}">{{fees.currency}}{{totalFeeAmount}} · 人均 {{fees.currency}}{{perPersonFee}} · AA均摊</text>
         </view>
         <button class="link-button" bindtap="addFeeItem">+ 添加</button>
@@ -398,7 +381,7 @@
           <view class="versus">VS</view>
           <view class="team right"><text>{{item.teamBText}}</text><text class="team-label">B</text></view>
         </view>
-        <view class="rest" wx:if="{{item.restText}}">💤 休息：{{item.restText}}</view>
+        <view class="rest" wx:if="{{item.restText}}">休息：{{item.restText}}</view>
         <view class="rest rest-sm">让{{item.handicapText}}分 · {{item.teamAType}} vs {{item.teamBType}}</view>
         <view class="score-board" wx:if="{{item.canScore}}">
           <view class="score-side">
@@ -492,11 +475,8 @@
 
   <view wx:if="{{mainTab === 'mine'}}" class="mine-page">
     <view class="mine-hero">
-      <view class="mine-avatar">{{profileAvatarText}}</view>
-      <view class="mine-hero-text">
-        <text class="mine-name">{{profileTitle}}</text>
-        <text class="mine-sub">{{profileStats.matches}} 次活动 · {{profileStats.games}} 局</text>
-      </view>
+      <text class="mine-name">{{profileTitle}}</text>
+      <text class="mine-stat">{{profileStats.matches}} 次活动 · {{profileStats.games}} 局 · 胜率 {{profileStats.winRate}}</text>
     </view>
 
     <view class="section">
@@ -509,7 +489,7 @@
     </view>
 
     <view class="section" wx:if="{{profileTrend.length}}">
-      <text class="section-title">📈 近期趋势</text>
+      <text class="section-title">近期趋势</text>
       <view class="trend-cards">
         <view class="trend-card" wx:for="{{profileTrend}}" wx:key="label">
           <view class="tc-header">
@@ -523,14 +503,14 @@
     </view>
 
     <view class="section">
-      <text class="section-title">📋 活动记录</text>
+      <text class="section-title">活动记录</text>
       <view wx:if="{{profileRecords.length}}">
         <view class="record-card" wx:for="{{profileRecords}}" wx:key="date">
           <view class="rc-header">
             <text class="rc-title">{{item.title}}</text>
             <text class="rc-date">{{item.date}}</text>
           </view>
-          <text class="rc-meta">👥 {{item.players}}人 · 🏸 {{item.count}}局</text>
+          <text class="rc-meta">{{item.players}}人 · {{item.count}}局</text>
           <text class="rc-summary">{{item.summary}}</text>
         </view>
       </view>
