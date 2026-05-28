@@ -462,7 +462,7 @@
     </view>
   </view>
 
-  <canvas canvas-id="posterCanvas" class="poster-canvas"></canvas>
+  <canvas type="2d" id="posterCanvas" class="poster-canvas"></canvas>
 
   <view class="bottom-nav {{mainTab === 'launch' ? 'in-activity' : ''}}">
     <button class="{{mainTab === 'home' ? 'active' : ''}}" data-tab="home" bindtap="switchMainTab">首页</button>

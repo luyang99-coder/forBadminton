@@ -1878,11 +1878,11 @@
 }
 
 .poster-canvas {
-  height: 9000px;
-  left: -9999px;
   position: fixed;
-  top: -9999px;
+  left: -9999rpx;
+  top: 0;
   width: 375px;
+  height: 680px;
 }
 
 .flow-card {
