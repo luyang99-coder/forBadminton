@@ -1,6 +1,6 @@
-<view class="page" data-theme="{{theme}}">
+<view class="page">
   <view class="topbar">
-    <view class="brand-row" style="overflow:hidden;flex:1;min-width:0">
+    <view class="brand-row">
       <view class="brand-mark">Y</view>
       <view class="brand-copy">
         <text class="title">羽毛球打转</text>
@@ -9,10 +9,8 @@
         <text wx:else class="subtitle">首页 - 最近活动</text>
       </view>
     </view>
-    <view class="topbar-right">
-      <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
-      <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
-    </view>
+    <view wx:if="{{mainTab === 'launch'}}" class="pill">{{displayGameCount}} 局</view>
+    <view wx:else class="pill">{{recentActivities.length}} 场活动</view>
   </view>
 
   <view wx:if="{{mainTab === 'launch'}}" class="flow-card">
@@ -32,75 +30,84 @@
     <button bindtap="dismissError">关闭</button>
   </view>
 
-  <view wx:if="{{mainTab === 'home'}}" class="home-v2">
-    <view class="hero-banner">
-      <text class="hero-title">羽毛球打转</text>
-      <text class="hero-subtitle">智能轮转 · 数据复盘</text>
-      <view class="hero-stats">
-        <text class="hero-stat">{{recentActivities.length}} 场活动 · {{profileStats.matches}} 次出战 · 胜率 {{profileStats.winRate}}</text>
+  <view wx:if="{{mainTab === 'home'}}">
+    <view class="home-hero">
+      <view>
+        <text class="home-title">羽毛球活动管理</text>
+        <text class="home-subtitle">统一管理报名、轮转、比分和赛后结果。</text>
       </view>
-    </view>
-
-    <view class="quick-actions">
-      <button class="qa-btn qa-primary" bindtap="startNewActivity">+ 发起活动</button>
-    </view>
-
-    <view class="section" wx:if="{{activeActivities.length}}">
-      <view class="section-header">
-        <text class="section-title">进行中</text>
-        <text class="section-count">{{activeActivities.length}} 场</text>
-      </view>
-      <scroll-view class="active-cards-h" scroll-x>
-        <view class="active-card-featured" wx:for="{{activeActivities}}" wx:key="id" data-id="{{item.id}}" bindtap="openActivityCard">
-          <view class="afc-header">
-            <text class="afc-title">{{item.title}}</text>
-            <view class="afc-badge {{item.status}}">{{item.statusText}}</view>
-          </view>
-          <view class="afc-body">
-            <view class="afc-info-row">
-              <text>{{item.date}}</text>
-              <text>{{item.venue}}</text>
-            </view>
-            <view class="afc-info-row">
-              <text>{{item.playerCount}}人</text>
-              <text>{{item.courtCount}}场</text>
-              <text>{{item.gameCount}}局</text>
-            </view>
-            <view class="afc-progress">
-              <text class="afc-progress-text">{{item.completed || 0}}/{{item.gameCount}} 计分</text>
-              <view class="afc-progress-bar">
-                <view class="afc-progress-fill" style="width:{{(item.completed || 0) / (item.gameCount || 1) * 100}}%"></view>
-              </view>
-            </view>
-          </view>
-          <view class="afc-footer">
-            <text class="afc-updated">更新 {{item.updatedText || '-'}}</text>
-            <text class="afc-arrow">→</text>
-          </view>
-        </view>
-      </scroll-view>
+      <button wx:if="{{activityId}}" bindtap="openCurrentActivity">继续</button>
+      <button wx:else bindtap="startNewActivity">发起活动</button>
     </view>
 
     <view class="section">
-      <view class="section-header">
-        <text class="section-title">已结束</text>
-        <view class="home-search-wrap">
-          <input class="home-search-inline" value="{{homeKeyword}}" bindinput="onHomeKeywordInput" placeholder="搜索" />
-        </view>
+      <view class="home-tools">
+        <input class="home-search" value="{{homeKeyword}}" bindinput="onHomeKeywordInput" placeholder="搜索活动" />
       </view>
-      <scroll-view wx:if="{{endedActivities.length}}" class="activity-list" scroll-y>
-        <view class="ended-card" wx:for="{{endedActivities}}" wx:key="id" data-id="{{item.id}}" bindtap="openActivityCard">
-          <view class="ec-left">
-            <text class="ec-title">{{item.title}}</text>
-            <text class="ec-meta">{{item.date}} · {{item.venue}} · {{item.playerCount}}人 · {{item.courtCount}}场</text>
+      <view class="section-head">
+        <text class="section-title">进行中</text>
+        <button wx:if="{{activityId}}" class="link-button" bindtap="openCurrentActivity">继续</button>
+      </view>
+      <scroll-view wx:if="{{activeActivities.length}}" class="activity-list" scroll-y>
+        <view class="activity-card" wx:for="{{activeActivities}}" wx:key="id">
+          <view class="activity-main" data-id="{{item.id}}" bindtap="openActivityCard">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-meta">{{item.date}} - {{item.venue}}</text>
+            <text class="activity-meta">{{item.playerCount}} 人 - {{item.courtCount}} 片场 - {{item.gameCount}} 局</text>
+            <text class="activity-meta">{{item.roleText}} - 更新 {{item.updatedText || '-'}}</text>
           </view>
-          <view class="ec-right">
-            <text class="ec-arrow">→</text>
+          <view class="activity-status">
+            <text>{{item.statusText}}</text>
+            <text>{{item.completed}}/{{item.gameCount}}</text>
+          </view>
+          <view class="activity-actions">
+            <button data-id="{{item.id}}" bindtap="openActivityCard">{{item.entryText}}</button>
+            <button wx:if="{{item.canRemove}}" class="danger" data-id="{{item.id}}" bindtap="deleteActivityCard">{{item.removeText}}</button>
           </view>
         </view>
       </scroll-view>
-      <view wx:if="{{!endedActivities.length}}" class="empty-state">暂无已结束活动。</view>
-      <button wx:if="{{endedHasMore}}" class="load-more" data-section="ended" bindtap="loadMoreHomeSection">加载更多</button>
+      <button wx:if="{{activeHasMore}}" class="load-more" data-section="active" bindtap="loadMoreHomeSection">加载更多进行中活动</button>
+      <view wx:if="{{!activeActivities.length}}" class="empty-state">暂无进行中的活动。</view>
+    </view>
+
+    <view class="section" wx:if="{{endedActivities.length}}">
+      <view class="section-head">
+        <text class="section-title">已结束活动</text>
+        <text class="generated">{{endedActivities.length}} 场活动</text>
+      </view>
+      <scroll-view class="activity-list small" scroll-y>
+        <view class="activity-card" wx:for="{{endedActivities}}" wx:key="id">
+          <view class="activity-main" data-id="{{item.id}}" bindtap="viewActivityResult">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-meta">{{item.date}} - {{item.venue}}</text>
+            <text class="activity-meta">{{item.completed}}/{{item.gameCount}} 已计分 - {{item.playerCount}} 人</text>
+            <text class="activity-meta">{{item.roleText}} - 更新 {{item.updatedText || '-'}}</text>
+          </view>
+          <view class="activity-status">
+            <text>{{item.statusText}}</text>
+            <text>{{item.completed}}/{{item.gameCount}}</text>
+          </view>
+          <view class="activity-actions">
+            <button data-id="{{item.id}}" bindtap="viewActivityResult">结果</button>
+            <button wx:if="{{item.canRemove}}" class="danger" data-id="{{item.id}}" bindtap="deleteActivityCard">删除</button>
+          </view>
+        </view>
+      </scroll-view>
+      <button wx:if="{{endedHasMore}}" class="load-more" data-section="ended" bindtap="loadMoreHomeSection">加载更多已结束活动</button>
+    </view>
+
+    <view class="section" wx:if="{{cloudReady && cloudActivityHasMore}}">
+      <button class="load-more wide" bindtap="loadMoreCloudActivities">从云端加载更多</button>
+    </view>
+
+    <view class="section">
+      <view class="section-title">个人统计</view>
+      <view class="summary-grid">
+        <view><text>{{profileStats.matches}}</text><text>活动</text></view>
+        <view><text>{{profileStats.games}}</text><text>对局</text></view>
+        <view><text>{{profileStats.winRate}}</text><text>胜率</text></view>
+        <view><text>{{profileStats.netPoints}}</text><text>净胜分</text></view>
+      </view>
     </view>
   </view>
 
@@ -122,7 +129,7 @@
       <view class="share-actions">
         <button open-type="share" class="copy">分享报名</button>
         <button class="copy" bindtap="copyShareLink">复制链接</button>
-        <button class="copy" bindtap="generateActivityQr">生成二维码</button>
+        <button wx:if="{{role === 'admin'}}" class="copy" bindtap="generateQrCode">报名码</button>
         <button wx:if="{{qrCodeFileID || qrLocalPath}}" class="copy" bindtap="exportQrPoster">海报</button>
       </view>
     </view>
@@ -215,14 +222,6 @@
               <text>{{item.updatedText || '未更新'}}</text>
               <text wx:if="{{item.sourceText}}">{{item.sourceText}}</text>
             </view>
-            <view class="drawer-field fee-payment-field" wx:if="{{fees.items.length && role === 'admin'}}">
-              <text>缴费</text>
-              <view class="fee-payment-row">
-                <text class="fee-due">应缴 {{fees.currency}}{{perPersonFee}}</text>
-                <input type="digit" value="{{fees.payments[item.id] || 0}}" data-id="{{item.id}}" bindinput="onFeePaymentInput" placeholder="实缴" />
-                <text class="fee-status {{fees.payments[item.id] >= perPersonFee ? 'paid' : fees.payments[item.id] > 0 ? 'partial' : 'unpaid'}}">{{fees.payments[item.id] >= perPersonFee ? '已缴' : fees.payments[item.id] > 0 ? '部分' : '未缴'}}</text>
-              </view>
-            </view>
             <view class="drawer-actions" wx:if="{{!item.isOpenSlot}}">
               <button wx:if="{{item.canBindWechat}}" class="roster-link {{item.openid ? 'bound' : ''}}" data-id="{{item.id}}" bindtap="bindPlayerOpenid">绑定微信</button>
               <button wx:if="{{schedule.length}}" class="copy" data-id="{{item.id}}" bindtap="viewPlayerSchedule">查看对局</button>
@@ -232,32 +231,6 @@
           </view>
         </view>
       </view>
-    </view>
-
-    <view class="section" wx:if="{{role === 'admin' && fees}}">
-      <view class="section-head">
-        <view>
-          <text class="section-title">费用管理</text>
-          <text class="section-subtitle" wx:if="{{fees.items.length}}">{{fees.currency}}{{totalFeeAmount}} · 人均 {{fees.currency}}{{perPersonFee}} · AA均摊</text>
-        </view>
-        <button class="link-button" bindtap="addFeeItem">+ 添加</button>
-      </view>
-      <view class="fee-list" wx:if="{{fees.items.length}}">
-        <view class="fee-item" wx:for="{{fees.items}}" wx:key="id">
-          <view class="fee-info">
-            <input class="fee-name-input" value="{{item.name}}" data-id="{{item.id}}" bindinput="onFeeNameInput" placeholder="费用名称" />
-            <input class="fee-amount-input" type="digit" value="{{item.amount}}" data-id="{{item.id}}" bindinput="onFeeAmountInput" placeholder="金额" />
-            <text class="fee-currency">{{fees.currency}}</text>
-          </view>
-          <button class="fee-delete" data-id="{{item.id}}" bindtap="removeFeeItem">✕</button>
-        </view>
-      </view>
-      <view class="fee-summary" wx:if="{{fees.items.length}}">
-        <text>总计: {{fees.currency}}{{totalFeeAmount}}</text>
-        <text>人均: {{fees.currency}}{{perPersonFee}}</text>
-        <text class="fee-hint">AA均摊</text>
-      </view>
-      <view wx:else class="empty-state">暂无费用项，点击"+ 添加"开始。</view>
     </view>
 
     <view class="section" wx:if="{{role === 'admin'}}">
@@ -382,20 +355,21 @@
           <view class="team right"><text>{{item.teamBText}}</text><text class="team-label">B</text></view>
         </view>
         <view class="rest" wx:if="{{item.restText}}">休息：{{item.restText}}</view>
-        <view class="rest rest-sm">让{{item.handicapText}}分 · {{item.teamAType}} vs {{item.teamBType}}</view>
+        <view class="rest">类型：{{item.teamAType}} vs {{item.teamBType}} - 让分：{{item.handicapText}}</view>
         <view class="score-board" wx:if="{{item.canScore}}">
           <view class="score-side">
             <button data-id="{{item.id}}" data-side="A" data-delta="1" bindtap="adjustScore">+</button>
             <input type="number" value="{{item.scoreA}}" placeholder="A" data-id="{{item.id}}" data-side="A" bindinput="onScoreInput" />
             <button data-id="{{item.id}}" data-side="A" data-delta="-1" bindtap="adjustScore">-</button>
           </view>
-          <button class="finish-score" data-id="{{item.id}}" bindtap="saveResult">✓ 完成</button>
+          <button class="finish-score" data-id="{{item.id}}" bindtap="saveResult">完成</button>
           <view class="score-side">
             <button data-id="{{item.id}}" data-side="B" data-delta="1" bindtap="adjustScore">+</button>
             <input type="number" value="{{item.scoreB}}" placeholder="B" data-id="{{item.id}}" data-side="B" bindinput="onScoreInput" />
             <button data-id="{{item.id}}" data-side="B" data-delta="-1" bindtap="adjustScore">-</button>
           </view>
         </view>
+        <view class="rest">强弱差：{{item.skillGap}}</view>
       </view>
     </view>
   </view>
@@ -429,27 +403,11 @@
         <view><text>冠军</text><text>{{review.champion}}</text></view>
         <view><text>净胜王</text><text>{{review.netPointLeader}}</text></view>
         <view><text>最佳搭档</text><text>{{review.bestPartner}}</text></view>
-        <view><text>搭档胜率</text><text>{{review.bestPartnerWinRate}}</text></view>
         <view><text>最高胜率</text><text>{{review.bestWinRate}}</text></view>
-        <view><text>最难缠对手</text><text>{{review.toughestOpponent}}</text></view>
         <view><text>最均衡</text><text>{{review.mostBalancedGame}}</text></view>
         <view><text>最接近</text><text>{{review.closeGame}}</text></view>
         <view><text>平均强弱差</text><text>{{review.avgSkillGap}}</text></view>
         <view><text>重复风险</text><text>{{review.repeatRisk}}</text></view>
-        <view><text>本周参赛</text><text>{{review.weeklyActivity}}</text></view>
-        <view><text>对局完成</text><text>{{review.completedText}}</text></view>
-      </view>
-      <view wx:if="{{radarStats.length}}" class="radar-section">
-        <view class="section-subtitle">个人能力雷达图</view>
-        <view class="radar-grid">
-          <view class="radar-item" wx:for="{{radarStats}}" wx:key="label">
-            <view class="radar-bar-wrap">
-              <view class="radar-bar" style="height: {{item.value}}%;"></view>
-            </view>
-            <text class="radar-label">{{item.label}}</text>
-            <text class="radar-value">{{item.score}}</text>
-          </view>
-        </view>
       </view>
       <view class="hint">{{review.completedText}}</view>
       <view class="rank-table" wx:if="{{rankingStats.length}}">
@@ -473,52 +431,49 @@
     </view>
   </view>
 
-  <view wx:if="{{mainTab === 'mine'}}" class="mine-page">
-    <view class="mine-hero">
-      <text class="mine-name">{{profileTitle}}</text>
-      <text class="mine-stat">{{profileStats.matches}} 次活动 · {{profileStats.games}} 局 · 胜率 {{profileStats.winRate}}</text>
+  <view wx:if="{{mainTab === 'mine'}}">
+    <view class="profile-card">
+      <view class="avatar">{{profileAvatarText}}</view>
+      <view>
+        <text class="profile-name">{{profileTitle}}</text>
+        <text class="profile-subtitle">统计来自已结束或已计分活动</text>
+      </view>
     </view>
 
     <view class="section">
       <view class="summary-grid">
-        <view class="sg-item"><text class="sg-num">{{profileStats.winRate}}</text><text class="sg-label">胜率</text></view>
-        <view class="sg-item"><text class="sg-num">{{profileStats.wins}}-{{profileStats.losses}}</text><text class="sg-label">胜负</text></view>
-        <view class="sg-item"><text class="sg-num">{{profileStats.netPoints}}</text><text class="sg-label">净胜分</text></view>
-        <view class="sg-item"><text class="sg-num">{{profileStats.games}}</text><text class="sg-label">总局数</text></view>
+        <view><text>{{profileStats.games}}</text><text>双打局数</text></view>
+        <view><text>{{profileStats.winRate}}</text><text>胜率</text></view>
+        <view><text>{{profileStats.wins}}-{{profileStats.losses}}</text><text>胜负</text></view>
+        <view><text>{{profileStats.netPoints}}</text><text>净胜分</text></view>
       </view>
     </view>
 
     <view class="section" wx:if="{{profileTrend.length}}">
-      <text class="section-title">近期趋势</text>
-      <view class="trend-cards">
-        <view class="trend-card" wx:for="{{profileTrend}}" wx:key="label">
-          <view class="tc-header">
-            <text class="tc-label">{{item.label}}</text>
-            <text class="tc-rate">{{item.winRate}}%</text>
-          </view>
-          <view class="tc-track"><view class="tc-fill" style="width:{{item.winRate}}%"></view></view>
-          <text class="tc-stat">净胜 {{item.netPoints}} · {{item.games}}局</text>
+      <view class="section-title">近期趋势</view>
+      <view class="trend-list">
+        <view class="trend-row" wx:for="{{profileTrend}}" wx:key="label">
+          <text>{{item.label}}</text>
+          <view class="trend-track"><view class="trend-fill" style="width: {{item.winRate}}%;"></view></view>
+          <text>{{item.winRate}}% - {{item.netPoints}}</text>
         </view>
       </view>
     </view>
 
     <view class="section">
-      <text class="section-title">活动记录</text>
+      <view class="section-title">我的记录</view>
       <view wx:if="{{profileRecords.length}}">
         <view class="record-card" wx:for="{{profileRecords}}" wx:key="date">
-          <view class="rc-header">
-            <text class="rc-title">{{item.title}}</text>
-            <text class="rc-date">{{item.date}}</text>
-          </view>
-          <text class="rc-meta">{{item.players}}人 · {{item.count}}局</text>
-          <text class="rc-summary">{{item.summary}}</text>
+          <text class="activity-title">{{item.title}}</text>
+          <text class="activity-meta">{{item.date}} - {{item.players}} 人 - {{item.count}} 局</text>
+          <text class="activity-meta">{{item.summary}}</text>
         </view>
       </view>
-      <view wx:else class="empty-state">暂无记录，完成活动后这里会出现你的战绩。</view>
+      <view wx:else class="empty-state">暂无记录。</view>
     </view>
   </view>
 
-  <canvas type="2d" id="posterCanvas" class="poster-canvas"></canvas>
+  <canvas canvas-id="posterCanvas" class="poster-canvas"></canvas>
 
   <view class="bottom-nav {{mainTab === 'launch' ? 'in-activity' : ''}}">
     <button class="{{mainTab === 'home' ? 'active' : ''}}" data-tab="home" bindtap="switchMainTab">首页</button>
