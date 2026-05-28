@@ -328,7 +328,7 @@ Page({
     const activities = wx.getStorageSync(ACTIVITIES_KEY) || {}
     const activity = activities[activityId]
     if (!activity) {
-      this.showError('操作失败')
+      this.showError('活动不存在')
       return
     }
     const newId = nowId('a')
@@ -619,22 +619,6 @@ Page({
     return activityId
   },
 
-  loadActivity(activityId, role) {
-    if (this.data.cloudReady) {
-      this.callCloud('getActivity', { activityId }).then((res) => {
-        if (!res.ok) {
-          this.loadLocalActivity(activityId, role, res.message || '')
-          return
-        }
-        this.applyCloudActivity(res.activity, role, res.isOwner, res.isAdmin)
-      }).catch(() => {
-        this.loadLocalActivity(activityId, role, '')
-      })
-      return
-    }
-    this.loadLocalActivity(activityId, role, '')
-  },
-
   loadActivity(activityId, role, initialTab) {
     if (this.data.cloudReady) {
       this.callCloud('getActivity', { activityId }).then((res) => {
@@ -878,7 +862,7 @@ Page({
 
   lockRoster() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     this.setData({
@@ -895,7 +879,7 @@ Page({
 
   startActivity() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     if (!this.data.schedule.length) {
@@ -925,7 +909,7 @@ Page({
 
   endActivity() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     if (!this.data.schedule.length) {
@@ -1105,7 +1089,7 @@ Page({
   onPlayerNameBlur(event) {
     if (!event || !event.type || event.type !== 'confirm') return
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       this.refreshPlayerOptions()
       return
     }
@@ -1143,12 +1127,12 @@ Page({
 
   addSinglePlayer() {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法添加')
       return
     }
     const name = this.data.singleName.trim()
     if (!name) {
-      this.showError('操作失败')
+      this.showError('请输入球员姓名')
       return
     }
     if (this.data.role !== 'admin' && this.data.cloudReady) {
@@ -1168,15 +1152,15 @@ Page({
       return
     }
     if (this.data.activityStatus === 'ended') {
-      this.showError('操作失败')
+      this.showError('活动已结束')
       return
     }
     if (this.data.participants.length >= MAX_PLAYERS) {
-      this.showError('操作失败')
+      this.showError('人数已满')
       return
     }
     if (this.data.participants.some((player) => player.name === name)) {
-      this.showError('操作失败')
+      this.showError('该球员已在名单中')
       this.setData({ singleName: '' })
       return
     }
@@ -1237,7 +1221,7 @@ Page({
     const level = normalizeLevel(this.data.singleLevelDraft || this.data.singleLevel || slot.level)
     const name = String(this.data.singleName || '').trim() || slot.name
     if (isDefaultPlayerName(name)) {
-      this.showError('操作失败')
+      this.showError('请输入有效姓名')
       return
     }
     this.signupToCloud(Object.assign({}, slot, {
@@ -1254,12 +1238,12 @@ Page({
 
   addBenchSlot() {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法添加')
       return
     }
     if (this.data.role !== 'admin') return
     if ((this.data.participants || []).length >= MAX_PLAYERS) {
-      this.showError('操作失败')
+      this.showError('人数已满')
       return
     }
     const participants = (this.data.participants || []).concat({
@@ -1342,7 +1326,7 @@ Page({
       return
     }
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1375,7 +1359,7 @@ Page({
 
   bindPlayerOpenid(event) {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     if (!this.data.cloudReady) {
@@ -1396,7 +1380,7 @@ Page({
       }
     })
     if (!candidates.length) {
-      this.showError('操作失败')
+      this.showError('无可绑定的微信身份')
       return
     }
     wx.showActionSheet({
@@ -1453,7 +1437,7 @@ Page({
 
   setGender(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       return
     }
     const gender = event.currentTarget.dataset.gender
@@ -1467,7 +1451,7 @@ Page({
 
   changeLevel(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1481,7 +1465,7 @@ Page({
 
   changePlayerLevel(event) {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       return
     }
     const id = event.currentTarget.dataset.id
@@ -1712,7 +1696,7 @@ Page({
     }
     const option = this.data.claimPlayerOptions[this.data.claimPlayerIndex]
     if (!option || !option.id) {
-      this.showError('操作失败')
+      this.showError('请选择要认领的球员')
       return
     }
     wx.showModal({
@@ -1744,7 +1728,7 @@ Page({
   addAdminOpenid() {
     const option = this.data.playerOpenidOptions[this.data.adminPlayerIndex]
     if (!option || !option.openid) {
-      this.showError('操作失败')
+      this.showError('请选择管理员')
       return
     }
     const adminOpenid = option.openid
@@ -1853,7 +1837,7 @@ Page({
     const a = players[this.data.pairAIndex]
     const b = players[this.data.pairBIndex]
     if (!a || !b || a.id === b.id) {
-      this.showError('操作失败')
+      this.showError('请选择两个不同的球员')
       return
     }
     const pairId = pairKey(a.id, b.id)
@@ -1888,7 +1872,7 @@ Page({
 
   generate() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return
     }
     if (this.data.schedule.some((game) => game.completed)) {
@@ -1922,17 +1906,17 @@ Page({
       return
     }
     if (this.data.activityStatus === 'ended') {
-      this.showError('操作失败')
+      this.showError('活动已结束')
       return
     }
     const hasBench = this.data.participants.some((player) => player.status === 'bench' || player.status === 'late')
     if (!hasBench) {
-      this.showError('操作失败')
+      this.showError('没有候补球员')
       return
     }
     const promoted = autoPromoteBench(this.data.participants, this.data)
     if (!promoted.changed) {
-      this.showError('操作失败')
+      this.showError('候补球员已全部上场')
       return
     }
     const participants = promoted.participants
@@ -1967,15 +1951,15 @@ Page({
     const gameCount = Math.floor(Number(forcedRemaining || configuredGameCount))
     const courtCount = Math.max(1, Math.floor(Number(this.data.courtCount) || 1))
     if (players.length < 4) {
-      this.showError('操作失败')
+      this.showError('可排阵球员不足4人')
       return null
     }
     if (players.length > MAX_PLAYERS) {
-      this.showError('操作失败')
+      this.showError('球员人数超限')
       return null
     }
     if (!gameCount || gameCount < 1) {
-      this.showError('操作失败')
+      this.showError('局数设置有误')
       return null
     }
     return generateSchedule(players, gameCount, courtCount, {
@@ -2398,8 +2382,7 @@ Page({
 
   exportQrPoster() {
     if (!this.data.qrCodeFileID && !this.data.qrLocalPath) {
-      this.generateQrCode()
-      this.showError('海报生成失败')
+      this.showError('请先生成报名码')
       return
     }
     wx.showLoading({ title: '生成中' })
@@ -2580,11 +2563,11 @@ Page({
 
   updatePlayer(id, patch) {
     if (this.hasRosterEditLocked()) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       return
     }
     if (this.data.role !== 'admin' && this.data.rosterLocked) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法修改')
       return
     }
     if (this.data.role !== 'admin' && this.data.cloudReady) {
@@ -2614,7 +2597,7 @@ Page({
         return
       }
       if (!target || target.openid !== this.data.openid) {
-        this.showError('操作失败')
+        this.showError('无权修改该球员信息')
         return
       }
       this.signupToCloud(Object.assign({}, target, patch, {
@@ -3190,7 +3173,7 @@ Page({
     }).catch(() => {
       if (this.homeRequestId !== requestId) return
       this.setData({ syncing: false })
-      this.showError('操作失败')
+      this.showError('云端同步失败，请重试')
     })
   },
 
@@ -3609,11 +3592,11 @@ Page({
 
   canAdminEdit() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return false
     }
     if (this.data.rosterLocked) {
-      this.showError('操作失败')
+      this.showError('报名已锁定，无法编辑')
       return false
     }
     if (this.hasRosterEditLocked()) {
@@ -3634,7 +3617,7 @@ Page({
 
   canAdminEditSettings() {
     if (this.data.role !== 'admin') {
-      this.showError('操作失败')
+      this.showError('权限不足')
       return false
     }
     return true
@@ -3747,9 +3730,7 @@ Page({
     const count = (this.data.participants || []).filter(p => !p.isOpenSlot).length || 1
     const perPerson = total > 0 ? (total / count).toFixed(2) : '0.00'
     this.setData({
-      'fees.totalAmount': total,
-      totalFeeAmount: total,
-      perPersonFee: perPerson
+      'fees.totalAmount': total
     })
   },
 

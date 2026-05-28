@@ -27,7 +27,7 @@ function buildRankingStats(schedule, participants, ratingField = 'rating') {
 
     const winnerSide = scoreA > scoreB ? 'A' : (scoreB > scoreA ? 'B' : null)
     ;['A', 'B'].forEach(side => {
-      const members = side === 'A' ? this._getTeamMembers(game.teamAText) : this._getTeamMembers(game.teamBText)
+      const members = side === 'A' ? getTeamMembers(game.teamAText) : getTeamMembers(game.teamBText)
       const score = side === 'A' ? scoreA : scoreB
       const oppScore = side === 'A' ? scoreB : scoreA
       members.forEach(name => {
@@ -35,7 +35,7 @@ function buildRankingStats(schedule, participants, ratingField = 'rating') {
         if (!player) {
           stats[name] = { name, wins: 0, losses: 0, games: 0, totalScore: 0, totalLost: 0, netPoints: 0, winRate: '-' }
         }
-        const p = stats[name] || stats[name]
+        const p = stats[name]
         p.games++
         p.totalScore += score
         p.totalLost += oppScore
