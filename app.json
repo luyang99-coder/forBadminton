@@ -1,7 +1,6 @@
 {
   "pages": [
-    "pages/index/index",
-    "pages/launch/index"
+    "pages/index/index"
   ],
   "window": {
     "navigationBarTitleText": "羽毛球打转",
@@ -16,19 +15,12 @@
       "pages": [
         "index"
       ]
-    },
-    {
-      "root": "pages/history",
-      "name": "history",
-      "pages": [
-        "index"
-      ]
     }
   ],
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["stats", "history"]
+      "packages": ["stats"]
     }
   },
   "requiredPrivateInfos": ["chooseAddress", "getLocation"],

@@ -161,7 +161,7 @@ function buildCandidates(players, options) {
   const cacheKey = players.map(function(p) { return p.id }).sort().join(',') +
     '|' + (options.avoidWomenDoubles ? 'a' : '') +
     '|' + (options.preferMixed ? 'm' : '')
-  var cached = candidateCache.get(cacheKey)
+  const cached = candidateCache.get(cacheKey)
   if (cached) return cached
 
   const groups = combinations(players, 4)
@@ -208,7 +208,7 @@ function buildCandidates(players, options) {
 
   candidateCache.set(cacheKey, candidates)
   if (candidateCache.size > 32) {
-    var firstKey = candidateCache.keys().next().value
+    const firstKey = candidateCache.keys().next().value
     candidateCache.delete(firstKey)
   }
   return candidates

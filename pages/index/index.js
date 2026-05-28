@@ -227,7 +227,7 @@ Page({
       options.role = 'player'
     }
     // 从分包跳转时的参数
-    var initialTab = (options && options.tab) || ''
+    const initialTab = (options && options.tab) || ''
     this.initCloudSession(() => {
       if (options && options.activityId) {
         this.setData({ mainTab: 'launch' })
@@ -266,7 +266,7 @@ Page({
     let userKey = wx.getStorageSync(USER_KEY)
     if (!userKey) {
       userKey = nowId('u')
-      wx.setStorageSync(USER_KEY, userKey)
+      wx.setStorage({ key: USER_KEY, data: userKey })
     }
     return userKey
   },
@@ -297,7 +297,7 @@ Page({
   toggleDarkMode() {
     const theme = this.data.theme === 'dark' ? 'light' : 'dark'
     this.setData({ theme, darkMode: theme === 'dark' ? 'dark' : '' }, () => {
-      wx.setStorageSync('darkMode', theme)
+      wx.setStorage({ key: 'darkMode', data: theme })
     })
   },
 
@@ -379,7 +379,7 @@ Page({
     delete newActivity.deleted
     delete newActivity.updatedAt
     activities[newId] = newActivity
-    wx.setStorageSync(ACTIVITIES_KEY, activities)
+    wx.setStorage({ key: ACTIVITIES_KEY, data: activities })
     this.setData({ mainTab: 'launch' }, () => {
       this.loadActivity(newId, 'admin')
     })
@@ -522,10 +522,10 @@ Page({
   deleteActivityLocal(activityId, removeHistory) {
     const activities = wx.getStorageSync(ACTIVITIES_KEY) || {}
     delete activities[activityId]
-    wx.setStorageSync(ACTIVITIES_KEY, activities)
+    wx.setStorage({ key: ACTIVITIES_KEY, data: activities })
     const currentHistory = wx.getStorageSync(HISTORY_KEY) || []
     const history = removeHistory ? currentHistory.filter((item) => item.activityId !== activityId) : currentHistory
-    wx.setStorageSync(HISTORY_KEY, history)
+    wx.setStorage({ key: HISTORY_KEY, data: history })
     const resetCurrent = activityId === this.data.activityId
     const resetState = resetCurrent ? this.getEmptyActivityState() : {}
     this.setData(Object.assign({
@@ -669,7 +669,7 @@ Page({
       return
     }
     const presetCount = rotationLimitFromActivity(activity)
-    var activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
+    let activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
     if (initialTab === 'stats') activeTab = 'stats'
     if (initialTab === 'history') activeTab = 'history'
     this.setData(Object.assign({}, activity, {
@@ -712,7 +712,7 @@ Page({
       this.data.activityId === activity.activityId &&
       this.data.schedule.length &&
       presentKey(this.data.participants) !== presentKey(activity.participants)
-    var activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
+    let activeTab = activity.activeTab === 'review' ? 'stats' : (activity.activeTab || this.data.activeTab)
     if (initialTab === 'stats') activeTab = 'stats'
     if (initialTab === 'history') activeTab = 'history'
     this.setData(Object.assign({}, activity, {
@@ -801,7 +801,7 @@ Page({
       generatedAt: this.data.generatedAt,
       shareText: this.data.shareText
     }
-    wx.setStorageSync(ACTIVITIES_KEY, activities)
+    wx.setStorage({ key: ACTIVITIES_KEY, data: activities })
     this.refreshHomeData()
     if (!this.data.cloudReady || !this.data.activityId) return
     if (!forceCreate && !this.data.isAdmin && !this.data.isOwner) return
@@ -1224,7 +1224,7 @@ Page({
       // 首次报名后提示开启通知
       const hasPrompted = wx.getStorageSync('notifyPrompted')
       if (!hasPrompted) {
-        wx.setStorageSync('notifyPrompted', true)
+        wx.setStorage({ key: 'notifyPrompted', data: true })
         this.promptSubscribe()
       }
     })
@@ -1341,7 +1341,7 @@ Page({
         schedule: [],
         updatedAt: Date.now()
       })
-      wx.setStorageSync(ACTIVITIES_KEY, activities)
+      wx.setStorage({ key: ACTIVITIES_KEY, data: activities })
     }
     this.leaveActivityAfterCancel()
   },
@@ -2525,7 +2525,7 @@ Page({
   },
 
   clearHistory() {
-    wx.removeStorageSync(HISTORY_KEY)
+    wx.removeStorage({ key: HISTORY_KEY })
     this.setData({ history: [] })
   },
 
@@ -2957,45 +2957,45 @@ Page({
     const opponentList = Object.keys(opponentStats).filter(function (id) {
       return opponentStats[id].count > 0 && opponentStats[id].name
     }).map(function (id) {
-      var o = opponentStats[id]
+      const o = opponentStats[id]
       o.games = o.wins + o.losses
       o.winRate = o.games > 0 ? o.wins / o.games : 0
       return o
     }).filter(function (o) { return o.games > 0 })
-    var sortedOpponents = opponentList.slice().sort(function (a, b) {
+    const sortedOpponents = opponentList.slice().sort(function (a, b) {
       if (a.count !== b.count) return b.count - a.count
       return a.winRate - b.winRate
     })
     if (sortedOpponents.length) {
-      var top = sortedOpponents[0]
+      const top = sortedOpponents[0]
       toughestOpponent = top.name + ' ' + top.games + '场 ' + Math.round(top.winRate * 100) + '%胜率'
     }
 
     // --- 增强统计：本周参赛活跃度 ---
-    var weeklyActivity = '暂无数据'
-    var weeklyStats = null
+    let weeklyActivity = '暂无数据'
+    let weeklyStats = null
     if (games.length) {
-      var today = new Date()
-      var weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-      var weeklyGames = completed.filter(function (g) {
+      const today = new Date()
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+      const weeklyGames = completed.filter(function (g) {
         return g.recordedAt && new Date(g.recordedAt).getTime() > weekAgo.getTime()
       })
       if (!weeklyGames.length) {
         // 如果没有时间戳，用活动时间或整个对局数
         weeklyActivity = completed.length + ' 局 (本场)'
       } else {
-        var wWins = 0; var wLosses = 0
+        let wWins = 0; var wLosses = 0
         weeklyGames.forEach(function (g) {
           if (g.result && g.result.winner) {
             wWins += (g.result.winner === 'A' ? (g.teamAIds || []).length : (g.teamBIds || []).length)
             wLosses += (g.result.winner === 'A' ? (g.teamBIds || []).length : (g.teamAIds || []).length)
           }
         })
-        var wTotal = wWins + wLosses
+        let wTotal = wWins + wLosses
         weeklyActivity = weeklyGames.length + '局, ' + (wTotal ? (Math.round(wWins / wTotal * 100) + '%胜率') : '')
       }
       weeklyStats = { activityCount: 1, gameCount: completed.length, winRate: ' - ' }
-      var wTotal = 0; var wWins = 0
+      let wTotal = 0; var wWins = 0
       completed.forEach(function (g) {
         if (g.result && g.result.winner) {
           wTotal += 2
@@ -3023,12 +3023,12 @@ Page({
 
   buildRadarStats(stats, games) {
     if (!stats || !stats.length) return []
-    var maxGames = stats.length
-    var totalWinRate = 0
-    var totalNetPoints = 0
-    var totalGames = 0
-    var totalWins = 0
-    var totalLosses = 0
+    const maxGames = stats.length
+    let totalWinRate = 0
+    let totalNetPoints = 0
+    let totalGames = 0
+    let totalWins = 0
+    let totalLosses = 0
     stats.forEach(function (s) {
       totalGames += s.games || 0
       totalWins += s.wins || 0
@@ -3037,15 +3037,15 @@ Page({
     })
     totalWinRate = totalGames > 0 ? totalWins / totalGames : 0
     // 参赛率：实际参赛人数/总人数
-    var participationRate = Math.min(100, Math.round((maxGames / Math.max(1, (stats.length || 1))) * 100))
+    const participationRate = Math.min(100, Math.round((maxGames / Math.max(1, (stats.length || 1))) * 100))
     // 净胜分指数
-    var netPointIndex = Math.min(100, Math.round((totalNetPoints / Math.max(1, totalGames)) * 20))
+    let netPointIndex = Math.min(100, Math.round((totalNetPoints / Math.max(1, totalGames)) * 20))
     // 胜率指数
-    var winRateIndex = Math.min(100, Math.round(totalWinRate * 100))
+    let winRateIndex = Math.min(100, Math.round(totalWinRate * 100))
     // 均衡指数
-    var balanceIndex = Math.min(100, Math.round((1 - Math.abs(totalWins - totalLosses) / Math.max(1, totalGames)) * 100))
+    let balanceIndex = Math.min(100, Math.round((1 - Math.abs(totalWins - totalLosses) / Math.max(1, totalGames)) * 100))
     // 活跃指数
-    var activityIndex = (games || []).length > 0 ? Math.min(100, Math.round((stats.length / Math.max(1, (games || []).length)) * 100)) : 50
+    const activityIndex = (games || []).length > 0 ? Math.min(100, Math.round((stats.length / Math.max(1, (games || []).length)) * 100)) : 50
     return [
       { label: '胜率', value: winRateIndex, score: Math.round(totalWinRate * 100) + '%' },
       { label: '净胜', value: netPointIndex, score: totalNetPoints + '' },
@@ -3119,7 +3119,7 @@ Page({
     const history = [item].concat((this.data.history || []).filter((historyItem) => {
       return historyItem.activityId !== item.activityId
     })).slice(0, 8)
-    wx.setStorageSync(HISTORY_KEY, history)
+    wx.setStorage({ key: HISTORY_KEY, data: history })
     this.setData({ history }, () => this.refreshHomeData())
   },
 
@@ -3487,7 +3487,7 @@ Page({
 
   callCloud(action, data) {
     // action → 子云函数映射
-    var subFnMap = {
+    const subFnMap = {
       signup: 'signup',
       cancelSignup: 'signup',
       claimPlayer: 'signup',
@@ -3497,9 +3497,9 @@ Page({
       addAdmin: 'roster',
       removeAdmin: 'roster'
     }
-    var subFn = subFnMap[action]
-    var functionName = subFn ? CLOUD_FUNCTION + '/' + subFn : CLOUD_FUNCTION
-    var callData = subFn ? { action: action, data: data } : { action: action, data: data }
+    const subFn = subFnMap[action]
+    const functionName = subFn ? CLOUD_FUNCTION + '/' + subFn : CLOUD_FUNCTION
+    const callData = subFn ? { action: action, data: data } : { action: action, data: data }
     return wx.cloud.callFunction({
       name: functionName,
       data: callData
@@ -3578,7 +3578,7 @@ Page({
       // 首次报名后提示开启通知
       const hasPrompted = wx.getStorageSync('notifyPrompted')
       if (!hasPrompted) {
-        wx.setStorageSync('notifyPrompted', true)
+        wx.setStorage({ key: 'notifyPrompted', data: true })
         this.promptSubscribe()
       }
     }).catch(() => {
@@ -3820,7 +3820,7 @@ Page({
   },
 
   openHistory() {
-    wx.navigateTo({ url: '/pages/history/index' })
+    wx.navigateTo({ url: '/pages/index/index?tab=history' })
   },
 
   promptSubscribe() {
