@@ -46,7 +46,6 @@
       </view>
       <view class="section-head">
         <text class="section-title">进行中</text>
-        <button wx:if="{{activityId}}" class="link-button" bindtap="openCurrentActivity">继续</button>
       </view>
       <scroll-view wx:if="{{activeActivities.length}}" class="activity-list" scroll-y>
         <view class="activity-card" wx:for="{{activeActivities}}" wx:key="id">
@@ -98,16 +97,6 @@
 
     <view class="section" wx:if="{{cloudReady && cloudActivityHasMore}}">
       <button class="load-more wide" bindtap="loadMoreCloudActivities">从云端加载更多</button>
-    </view>
-
-    <view class="section">
-      <view class="section-title">个人统计</view>
-      <view class="summary-grid">
-        <view><text>{{profileStats.matches}}</text><text>活动</text></view>
-        <view><text>{{profileStats.games}}</text><text>对局</text></view>
-        <view><text>{{profileStats.winRate}}</text><text>胜率</text></view>
-        <view><text>{{profileStats.netPoints}}</text><text>净胜分</text></view>
-      </view>
     </view>
   </view>
 
